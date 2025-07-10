@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialSphere - Create Account</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-fuchsia-900 to-cyan-900">
+    <!-- Header with SocialSphere Branding -->
+    <div class="absolute top-8 left-8 flex items-center space-x-3">
+        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center animate-float">
+            <i class="fas fa-globe text-white text-xl"></i>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold gradient-text">SocialSphere</h1>
+            <p class="text-gray-300 text-sm">Connect, Share, Inspire</p>
+        </div>
+    </div>
+
+    <div class="w-full max-w-lg mx-auto p-1 rounded-2xl shadow-2xl">
+        <div class="p-10 rounded-2xl bg-gray-800 bg-opacity-90 border-4 border-fuchsia-800 flex flex-col items-center shadow-2xl">
+            <div class="text-5xl mb-4 text-fuchsia-400 animate-pulse">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="text-4xl font-extrabold mb-2 text-white drop-shadow-lg text-center tracking-tight uppercase">Create Account</h2>
+            <p class="text-gray-300 text-center mb-6">Join the SocialSphere community</p>
+            <form action="/register" method="post" class="w-full flex flex-col gap-5">
+                <input type="text" name="name" placeholder="Name" class="px-5 py-3 bg-gray-900 bg-opacity-70 border-2 border-fuchsia-700 rounded-xl outline-none text-white text-lg font-bold placeholder-fuchsia-400 focus:ring-2 focus:ring-cyan-400 shadow-md">
+                <input type="text" name="username" placeholder="Username" class="px-5 py-3 bg-gray-900 bg-opacity-70 border-2 border-fuchsia-700 rounded-xl outline-none text-white text-lg font-bold placeholder-cyan-400 focus:ring-2 focus:ring-yellow-400 shadow-md">
+                <input type="text" name="email" placeholder="Email" class="px-5 py-3 bg-gray-900 bg-opacity-70 border-2 border-cyan-700 rounded-xl outline-none text-white text-lg font-bold placeholder-cyan-400 focus:ring-2 focus:ring-yellow-400 shadow-md">
+                <input type="text" name="password" placeholder="Password" class="px-5 py-3 bg-gray-900 bg-opacity-70 border-2 border-fuchsia-700 rounded-xl outline-none text-white text-lg font-bold placeholder-fuchsia-400 focus:ring-2 focus:ring-cyan-400 shadow-md">
+                <input type="text" name="age" placeholder="Age" class="px-5 py-3 bg-gray-900 bg-opacity-70 border-2 border-fuchsia-700 rounded-xl outline-none text-white text-lg font-bold placeholder-fuchsia-400 focus:ring-2 focus:ring-yellow-400 shadow-md">
+                <button type="submit" class="mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-fuchsia-700 via-cyan-700 to-yellow-500 text-white font-extrabold py-3 px-8 rounded-xl shadow-xl text-2xl transition duration-200 transform hover:scale-105">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            <div class="mt-6 text-center">
+                <p class="text-gray-300">Already have an account?
+                    <a href="/login" class="text-cyan-100 font-bold hover:underline">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="absolute bottom-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2025 SocialSphere. All rights reserved.</p>
+    </div>
+</body>
+</html>

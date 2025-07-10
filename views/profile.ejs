@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .dark-mode {
+            --bg-primary: #0f172a;
+            --bg-secondary: rgba(17, 25, 40, 0.75);
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: rgba(255, 255, 255, 0.125);
+            --card-bg: rgba(17, 25, 40, 0.75);
+            --nav-text: #cbd5e1;
+            --post-text: #e2e8f0;
+            --username-text: #ffffff;
+            --timestamp-text: #64748b;
+            --stats-text: #ffffff;
+            --stats-label: #cbd5e1;
+            --main-heading: #ffffff;
+            --section-heading: #ffffff;
+            --quote-text: #ffffff;
+            --footer-text: #64748b;
+        }
+
+        .light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: rgba(255, 255, 255, 0.9);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --nav-text: #475569;
+            --post-text: #334155;
+            --username-text: #1e293b;
+            --timestamp-text: #64748b;
+            --stats-text: #ffffff;
+            --stats-label: #e2e8f0;
+            --main-heading: #1e293b;
+            --section-heading: #1e293b;
+            --quote-text: #1e293b;
+            --footer-text: #64748b;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .glass-effect {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+        }
+
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mode-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .textarea-dark {
+            background: rgba(15, 23, 42, 0.8);
+            color: #ffffff;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .textarea-light {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .textarea-dark:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .textarea-light:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        /* Theme-specific text colors */
+        .nav-text { color: var(--nav-text); }
+        .post-text { color: var(--post-text); }
+        .username-text { color: var(--username-text); }
+        .timestamp-text { color: var(--timestamp-text); }
+        .stats-text { color: var(--stats-text); }
+        .stats-label { color: var(--stats-label); }
+        .main-heading { color: var(--main-heading); }
+        .section-heading { color: var(--section-heading); }
+        .quote-text { color: var(--quote-text); }
+        .footer-text { color: var(--footer-text); }
+    </style>
+</head>
+<body class="dark-mode">
+    <!-- Theme Toggle Button -->
+    <button class="mode-toggle" onclick="toggleTheme()" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Navigation Header -->
+    <nav class="glass-effect sticky top-0 z-50 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold gradient-text">Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="nav-text text-sm">Welcome back, <span class="text-purple-400 font-semibold"><%= user.name %></span></span>
+                    <a href="/logout" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-pink-500 hover:to-red-500 transition-all duration-300 px-6 py-2 rounded-full text-white font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Profile Section -->
+        <div class="glass-effect rounded-3xl p-8 mb-8">
+            <div class="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
+                <!-- Profile Picture -->
+                <div class="relative">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gradient-to-r from-purple-500 to-pink-500 shadow-2xl animate-float">
+                        <img class="w-full h-full object-cover" src="/images/uploads/<%= user.profilepic %>" alt="Profile Picture">
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-slate-900 flex items-center justify-center">
+                        <i class="fas fa-check text-white text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="flex-1 text-center lg:text-left">
+                    <h2 class="text-4xl font-bold main-heading mb-2">
+                        Welcome back, <span class="gradient-text"><%= user.name %></span>! 👋
+                    </h2>
+                    <p class="nav-text text-lg mb-6">Share your thoughts and connect with others</p>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-4 text-center">
+                            <div class="stats-text text-2xl font-bold"><%= user.posts.length %></div>
+                            <div class="stats-label text-sm">Total Posts</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-500 to-teal-500 rounded-xl p-4 text-center">
+                            <div class="stats-text text-2xl font-bold">
+                                <%= user.posts.reduce((total, post) => total + post.likes.length, 0) %>
+                            </div>
+                            <div class="stats-label text-sm">Total Likes</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 text-center">
+                            <div class="stats-text text-2xl font-bold">
+                                <%= user.posts.filter(post => post.likes.length > 0).length %>
+                            </div>
+                            <div class="stats-label text-sm">Liked Posts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Post Form -->
+            <div class="mt-8">
+                <form action="/post" method="post" class="space-y-4">
+                    <div class="relative">
+                        <textarea 
+                            name="content" 
+                            rows="4" 
+                            placeholder="What's on your mind today? Share your thoughts..." 
+                            class="w-full p-6 rounded-2xl textarea-dark textarea-light resize-none transition-all duration-300 outline-none"
+                            id="postTextarea"
+                        ></textarea>
+                        <div class="absolute bottom-4 right-4 timestamp-text text-sm">
+                            <i class="fas fa-pen-fancy mr-1"></i>Share your story
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-pink-600 hover:to-purple-600 transition-all duration-300 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Create Post</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-3xl font-bold section-heading flex items-center">
+                    <i class="fas fa-newspaper mr-3 text-purple-400"></i>
+                    Your Posts
+                </h3>
+                <div class="nav-text text-sm">
+                    <i class="fas fa-filter mr-1"></i>
+                    Showing <%= user.posts.length %> posts
+                </div>
+            </div>
+
+            <% if (user.posts.length === 0) { %>
+                <div class="glass-effect rounded-3xl p-12 text-center">
+                    <div class="text-6xl text-gray-500 mb-4">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h4 class="text-2xl font-semibold nav-text mb-2">No posts yet</h4>
+                    <p class="timestamp-text">Start sharing your thoughts to see them here!</p>
+                </div>
+            <% } else { %>
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <% user.posts.forEach(function(post) { %>
+                    <div class="glass-effect rounded-2xl p-6 card-hover">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="username-text font-semibold"><%= user.username %></h4>
+                                    <p class="timestamp-text text-sm">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        <%= new Date(post.createdAt).toLocaleDateString() %>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <a href="/edit/<%= post._id %>" class="text-blue-400 hover:text-blue-300 transition-colors" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/delete/<%= post._id %>" class="text-red-400 hover:text-red-300 transition-colors" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <p class="post-text mb-4 leading-relaxed"><%= post.content %></p>
+                        
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-700">
+                            <div class="flex items-center space-x-4">
+                                <a href="/like/<%= post._id %>" class="flex items-center space-x-2 timestamp-text hover:text-red-400 transition-colors">
+                                    <i class="fas fa-heart <%= post.likes.indexOf(user._id) !== -1 ? 'text-red-500' : '' %>"></i>
+                                    <span><%= post.likes.length %></span>
+                                </a>
+                            </div>
+                            <div class="timestamp-text text-sm">
+                                <i class="fas fa-comment mr-1"></i>
+                                0 comments
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Inspiration Section -->
+        <div class="glass-effect rounded-3xl p-8 text-center">
+            <div class="text-5xl mb-6 text-yellow-400 animate-float">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <blockquote class="text-2xl font-bold quote-text mb-4 leading-relaxed">
+                "The only way to do great work is to love what you do."
+            </blockquote>
+            <cite class="text-purple-400 font-semibold text-lg">— Steve Jobs</cite>
+            <p class="timestamp-text mt-4">Keep creating and inspiring others!</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-effect mt-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 footer-text">
+                    <i class="fas fa-code"></i>
+                    <span class="font-mono">Built with ❤️ and modern design</span>
+                </div>
+                <div class="flex items-center space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="footer-text hover:text-purple-400 transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="footer-text hover:text-purple-400 transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="footer-text hover:text-purple-400 transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const textarea = document.getElementById('postTextarea');
+            
+            if (body.classList.contains('dark-mode')) {
+                // Switch to light mode
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                themeIcon.className = 'fas fa-sun';
+                textarea.classList.remove('textarea-dark');
+                textarea.classList.add('textarea-light');
+            } else {
+                // Switch to dark mode
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeIcon.className = 'fas fa-moon';
+                textarea.classList.remove('textarea-light');
+                textarea.classList.add('textarea-dark');
+            }
+        }
+
+        // Initialize theme based on user preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const body = document.body;
+            const textarea = document.getElementById('postTextarea');
+            
+            if (prefersDark) {
+                body.classList.add('dark-mode');
+                textarea.classList.add('textarea-dark');
+            } else {
+                body.classList.add('light-mode');
+                textarea.classList.add('textarea-light');
+            }
+        });
+    </script>
+</body>
+</html>

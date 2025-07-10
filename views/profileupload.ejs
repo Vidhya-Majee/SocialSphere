@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Profile Picture</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-fuchsia-900 to-cyan-900">
+    <div class="w-full max-w-lg mx-auto p-1 rounded-2xl shadow-2xl">
+        <div class="p-10 rounded-2xl bg-gray-800 bg-opacity-90 border-4 border-fuchsia-800 flex flex-col items-center shadow-2xl">
+            <div class="mb-6 flex flex-col items-center">
+                <div class="text-6xl text-cyan-400 mb-2">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <h1 class="text-3xl font-extrabold mb-6 text-white drop-shadow-lg text-center tracking-tight uppercase">Upload Profile Picture</h1>
+            <form action="/upload" method="post" class="w-full flex flex-col gap-5" enctype="multipart/form-data">
+                <label class="flex flex-col items-center cursor-pointer w-full">
+                    <span class="mb-2 text-lg font-bold text-fuchsia-400">Choose an image</span>
+                    <input type="file" name="image" accept="image/*" class="hidden">
+                    <span class="px-6 py-2 bg-cyan-700 text-white rounded-lg font-bold shadow-md hover:bg-cyan-800 transition mt-2">Browse</span>
+                </label>
+                <button type="submit" class="mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-fuchsia-700 via-cyan-700 to-yellow-500 text-white font-extrabold py-3 px-8 rounded-xl shadow-xl text-xl transition duration-200 transform hover:scale-105">
+                    <i class="fas fa-upload"></i> Upload Profile Picture
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
