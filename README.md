@@ -286,8 +286,8 @@ npm install
 Create a `.env` file in the project root:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/socialsphere
-JWT_SECRET=your_super_secret_key_here
+MONGODB_URI=mongodb://localhost:36106/socialsphere
+JWT_SECRET=your_secret_key_here
 PORT=5000
 ```
 
