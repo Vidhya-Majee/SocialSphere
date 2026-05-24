@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('partials/sidebar') %>
+
+    <div class="app-main app-main--wide">
+      <header class="mobile-header">
+        <h1>Explore</h1>
+        <div class="mobile-header-actions">
+          <a href="/search"><i class="fas fa-magnifying-glass"></i></a>
+        </div>
+      </header>
+
+      <div class="content-primary page-padding">
+        <section class="widget" style="margin:1rem;border:none">
+          <h3 style="margin-bottom:0.75rem">Trending creators</h3>
+          <div class="people-scroll">
+            <% trending.forEach(function(p) { %>
+            <a href="/u/<%= p.username %>" class="people-card">
+              <img class="avatar" src="<%= profileImg(p.profilepic) %>" alt="">
+              <strong style="font-size:0.8rem"><%= p.username %></strong>
+              <span class="text-muted" style="font-size:0.7rem"><%= (p.followers || []).length %> followers</span>
+            </a>
+            <% }) %>
+          </div>
+        </section>
+
+        <h2 class="sr-only">Discover posts</h2>
+        <div class="explore-grid">
+          <% posts.forEach(function(post) { %>
+          <a href="/u/<%= post.user.username %>" class="explore-tile">
+            <% if (post.image) { %>
+            <img src="/images/uploads/<%= post.image %>" alt="">
+            <% } else { %>
+            <div class="tile-text"><%= post.content.slice(0, 80) %></div>
+            <% } %>
+          </a>
+          <% }) %>
+        </div>
+
+        <% if (!posts.length) { %>
+        <div class="empty-state">
+          <i class="fas fa-compass"></i>
+          <p>Nothing to explore yet. Be the first to post!</p>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <%- include('partials/bottom-nav') %>
+  </div>
+  <script src="/javascripts/app.js"></script>
+</body>
+</html>

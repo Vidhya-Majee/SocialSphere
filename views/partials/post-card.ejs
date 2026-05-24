@@ -1,0 +1,97 @@
+<% const likes = post.likes || []; %>
+<% const liked = likes.some(function(id) { return (id._id || id).toString() === user._id.toString(); }); %>
+<% const postUser = (post.user && post.user.username) ? post.user : null; %>
+<% const ownerId = post.user ? (post.user._id || post.user).toString() : ''; %>
+<% const isOwnPost = ownerId === user._id.toString(); %>
+<% const bodyText = (post.content || '').trim(); %>
+<% const isQuotePost = bodyText && !post.image; %>
+<% const back = typeof redirectPath !== 'undefined' ? redirectPath : '/feed'; %>
+<% const savedList = (user.savedPosts || []).map(function(id) { return (id._id || id).toString(); }); %>
+<% const isSaved = savedList.indexOf(post._id.toString()) !== -1; %>
+<article class="card<%= isQuotePost ? ' card--quote' : '' %>" id="post-<%= post._id %>">
+  <header class="card-header">
+    <% if (postUser) { %>
+    <a href="/u/<%= postUser.username %>" class="card-user">
+      <img class="avatar" src="<%= profileImg(postUser.profilepic) %>" alt="">
+      <div>
+        <strong><%= postUser.username %></strong>
+        <span><%= timeAgo(post.date) %></span>
+      </div>
+    </a>
+    <% } else if (isOwnPost) { %>
+    <div class="card-user">
+      <img class="avatar" src="<%= profileImg(user.profilepic) %>" alt="">
+      <div>
+        <strong><%= user.username %></strong>
+        <span><%= timeAgo(post.date) %></span>
+      </div>
+    </div>
+    <% } %>
+    <div class="post-menu">
+      <% if (isOwnPost) { %>
+      <a href="/edit/<%= post._id %>?next=<%= encodeURIComponent(back) %>" class="post-menu__btn" title="Edit"><i class="fas fa-pen"></i></a>
+      <form action="/delete/<%= post._id %>" method="post" class="post-menu__form" onsubmit="return confirm('Delete this post forever?');">
+        <input type="hidden" name="redirect" value="<%= back %>">
+        <button type="submit" class="post-menu__btn post-menu__btn--danger" title="Delete"><i class="fas fa-trash"></i></button>
+      </form>
+      <% } %>
+      <a href="/messages?share=<%= post._id %>" class="post-menu__btn" title="Share in chat"><i class="fas fa-paper-plane"></i></a>
+    </div>
+  </header>
+
+  <% if (isQuotePost) { %>
+  <blockquote class="post-quote">
+    <p class="post-quote__text"><%= bodyText %></p>
+  </blockquote>
+  <% } %>
+
+  <% if (post.image) { %>
+  <img class="post-image" src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="Post">
+  <% } %>
+
+  <div class="post-actions">
+    <a href="/like/<%= post._id %>?next=<%= encodeURIComponent(back) %>"
+       class="<%= liked ? 'liked' : '' %>" data-like aria-label="Like">
+      <i class="<%= liked ? 'fas' : 'far' %> fa-heart"></i>
+    </a>
+    <a href="#comment-input-<%= post._id %>" aria-label="Comment"><i class="far fa-comment"></i></a>
+    <a href="/messages?share=<%= post._id %>" aria-label="Share in messages"><i class="far fa-paper-plane"></i></a>
+    <a href="/save/<%= post._id %>?next=<%= encodeURIComponent(back) %>"
+       class="post-save<%= isSaved ? ' saved' : '' %>" aria-label="<%= isSaved ? 'Unsave' : 'Save' %>">
+      <i class="<%= isSaved ? 'fas' : 'far' %> fa-bookmark"></i>
+    </a>
+  </div>
+
+  <div class="post-meta">
+    <% if (likes.length) { %>
+    <p class="likes-count"><%= likes.length %> like<%= likes.length === 1 ? '' : 's' %></p>
+    <% } %>
+    <% if (bodyText && post.image) { %>
+    <p class="post-caption"><%= bodyText %></p>
+    <% } %>
+    <% if (post.comments && post.comments.length) { %>
+    <div class="comments-list" id="comments-<%= post._id %>">
+      <% post.comments.forEach(function(c) { %>
+      <div class="comment-row">
+        <p class="comment">
+          <strong><%= c.user ? c.user.username : 'user' %></strong> <%= c.text %>
+        </p>
+        <% if (c.user && c.user._id && c.user._id.toString() === user._id.toString()) { %>
+        <form action="/comment/<%= post._id %>/delete/<%= c._id %>" method="post" class="comment-delete">
+          <input type="hidden" name="redirect" value="<%= back %>">
+          <button type="submit" title="Delete comment"><i class="fas fa-xmark"></i></button>
+        </form>
+        <% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+    <p class="time"><%= timeAgo(post.date) %></p>
+  </div>
+
+  <form class="comment-form" action="/comment/<%= post._id %>" method="post">
+    <input type="hidden" name="redirect" value="<%= back %>">
+    <input type="text" id="comment-input-<%= post._id %>" name="text" placeholder="Add a comment..." maxlength="500" autocomplete="off">
+    <button type="submit">Post</button>
+  </form>
+</article>

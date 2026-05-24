@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('partials/sidebar') %>
+
+    <div class="app-main">
+      <header class="mobile-header">
+        <h1>SocialSphere</h1>
+        <div class="mobile-header-actions">
+          <a href="/search" aria-label="Search"><i class="fas fa-magnifying-glass"></i></a>
+          <a href="/explore" aria-label="Explore"><i class="fas fa-compass"></i></a>
+        </div>
+      </header>
+
+      <div class="content-primary page-padding">
+        <section class="stories-bar" aria-label="Stories">
+          <a href="/profile/upload" class="story-item">
+            <div class="story-ring">
+              <img src="<%= profileImg(user.profilepic) %>" alt="Your story">
+            </div>
+            <span>Your story</span>
+          </a>
+          <% storyUsers.forEach(function(s) { %>
+          <% if (s._id.toString() !== user._id.toString()) { %>
+          <a href="/u/<%= s.username %>" class="story-item">
+            <div class="story-ring">
+              <img src="<%= profileImg(s.profilepic) %>" alt="<%= s.username %>">
+            </div>
+            <span><%= s.username %></span>
+          </a>
+          <% } %>
+          <% }) %>
+        </section>
+
+        <% if (typeof query !== 'undefined' && query.error) { %>
+        <div class="auth-error" style="margin:0 0 1rem;border-radius:8px">
+          <%= query.error === 'empty' ? 'Write something or add a photo before sharing.' : (query.error === 'upload' ? 'Could not upload image. Try a smaller JPG or PNG.' : (query.error === 'delete' ? 'Could not delete post. Try again.' : 'Could not create post. Please try again.')) %>
+        </div>
+        <% } %>
+
+        <div class="card compose-card">
+          <form action="/post" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="redirect" value="/feed">
+            <textarea name="content" placeholder="What's on your mind<%= user.name ? ', ' + user.name.split(' ')[0] : '' %>?" maxlength="2200"></textarea>
+            <div class="compose-actions">
+              <label>
+                <i class="far fa-image"></i>
+                <span data-file-name>Photo</span>
+                <input type="file" name="image" accept="image/*" data-file-label="[data-file-name]">
+              </label>
+              <button type="submit" class="btn btn-primary" style="width:auto;margin:0">Share</button>
+            </div>
+          </form>
+        </div>
+
+        <% if (!posts.length) { %>
+        <div class="empty-state card">
+          <i class="fas fa-camera"></i>
+          <h2>No posts yet</h2>
+          <p>Be the first to share something with everyone on SocialSphere.</p>
+          <a href="/explore" class="btn btn-primary" style="width:auto;margin-top:1rem;display:inline-flex">Explore</a>
+        </div>
+        <% } else { %>
+        <% posts.forEach(function(post) { %>
+        <%- include('partials/post-card', { post: post, user: user, redirectPath: '/feed' }) %>
+        <% }) %>
+        <% } %>
+      </div>
+
+      <div class="content-aside">
+        <%- include('partials/suggestions') %>
+      </div>
+    </div>
+
+    <%- include('partials/bottom-nav') %>
+  </div>
+  <script src="/javascripts/app.js"></script>
+</body>
+</html>

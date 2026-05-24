@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('../partials/sidebar') %>
+
+    <div class="app-main app-main--single">
+      <header class="mobile-header">
+        <h1>Messages</h1>
+      </header>
+
+      <div class="content-primary page-padding messages-page">
+        <% if (typeof query !== 'undefined' && query.share) { %>
+        <div class="share-banner">
+          <i class="fas fa-share"></i>
+          <p>Tap a friend below to share this post in chat</p>
+        </div>
+        <% } %>
+
+        <section class="messages-section">
+          <h2 class="messages-section__title">Chats</h2>
+          <% if (!threads.length) { %>
+          <p class="text-muted" style="padding:1rem">No conversations yet. Pick someone below to start chatting!</p>
+          <% } %>
+          <% threads.forEach(function(t) { %>
+          <% if (!t.other) return; %>
+          <a href="/messages/with/<%= t.other.username %><%= (typeof query !== 'undefined' && query.share) ? '?share=' + query.share : '' %>" class="thread-row">
+            <img class="avatar" src="<%= profileImg(t.other.profilepic) %>" alt="">
+            <div class="thread-row__body">
+              <strong><%= t.other.username %></strong>
+              <span><%= t.conversation.lastPreview || 'Start chatting' %></span>
+            </div>
+            <span class="thread-row__time"><%= timeAgo(t.conversation.lastMessageAt) %></span>
+          </a>
+          <% }) %>
+        </section>
+
+        <section class="messages-section">
+          <h2 class="messages-section__title">Start a chat</h2>
+          <% if (!friends.length) { %>
+          <p class="text-muted" style="padding:1rem"><a href="/explore" class="text-link">Explore</a> to find people to message.</p>
+          <% } %>
+          <% friends.forEach(function(f) { %>
+          <a href="/messages/with/<%= f.username %><%= (typeof query !== 'undefined' && query.share) ? '?share=' + query.share : '' %>" class="thread-row">
+            <img class="avatar" src="<%= profileImg(f.profilepic) %>" alt="">
+            <div class="thread-row__body">
+              <strong><%= f.username %></strong>
+              <span><%= f.name %></span>
+            </div>
+            <i class="fas fa-chevron-right text-muted"></i>
+          </a>
+          <% }) %>
+        </section>
+      </div>
+    </div>
+
+    <%- include('../partials/bottom-nav') %>
+  </div>
+  <script src="/javascripts/app.js"></script>
+</body>
+</html>

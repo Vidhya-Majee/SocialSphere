@@ -1,24 +1,19 @@
-const mongoose=require('mongoose')
+const mongoose = require('mongoose');
+const { DEFAULT_PROFILE_PIC } = require('../config/defaults');
 
-mongoose.connect('mongodb+srv://vidhyamajee:vm2616@cluster10.o1uj7ay.mongodb.net')
+const userSchema = mongoose.Schema({
+  username: { type: String, required: true, unique: true, trim: true },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: String,
+  age: Number,
+  bio: { type: String, default: '', maxlength: 160 },
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+  savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
+  profilepic: { type: String, default: DEFAULT_PROFILE_PIC },
+  createdAt: { type: Date, default: Date.now },
+});
 
-const userSchema=mongoose.Schema({
-    username:String,
-    name:String,
-    email:String,
-    password:String,
-    age:Number,
-    posts:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'post'
-        }
-    ],
-    profilepic:{
-        type:String,
-        default:"vm.jpg"
-    }
-   
-})
-
-module.exports=mongoose.model('user',userSchema)
+module.exports = mongoose.model('user', userSchema);

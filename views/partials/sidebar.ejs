@@ -1,0 +1,29 @@
+<aside class="sidebar" aria-label="Main navigation">
+  <a href="/feed" class="sidebar-brand">
+    <span class="sidebar-brand-icon"><i class="fas fa-globe"></i></span>
+  </a>
+  <ul class="nav-list">
+    <li class="nav-item <%= active === 'feed' ? 'active' : '' %>">
+      <a href="/feed"><i class="fas fa-house"></i> Home</a>
+    </li>
+    <li class="nav-item <%= active === 'messages' ? 'active' : '' %>">
+      <a href="/messages"><i class="far fa-comment-dots"></i> Messages</a>
+    </li>
+    <li class="nav-item <%= active === 'search' ? 'active' : '' %>">
+      <a href="/search"><i class="fas fa-magnifying-glass"></i> Search</a>
+    </li>
+    <li class="nav-item <%= active === 'explore' ? 'active' : '' %>">
+      <a href="/explore"><i class="fas fa-compass"></i> Explore</a>
+    </li>
+    <li class="nav-item <%= active === 'profile' ? 'active' : '' %>">
+      <a href="/profile"><i class="far fa-user"></i> Profile</a>
+    </li>
+  </ul>
+  <button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+    <i class="fas fa-moon" id="themeIcon"></i> Theme
+  </button>
+  <a href="/profile" class="sidebar-user">
+    <img class="avatar" src="<%= profileImg(user.profilepic) %>" alt="">
+    <span><%= user.username %></span>
+  </a>
+</aside>

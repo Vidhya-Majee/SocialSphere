@@ -1,0 +1,32 @@
+<% const isMine = m.sender && m.sender._id.toString() === user._id.toString(); %>
+<div class="chat-bubble<%= isMine ? ' chat-bubble--mine' : '' %>" data-id="<%= m._id %>" data-time="<%= m.createdAt.toISOString ? m.createdAt.toISOString() : m.createdAt %>">
+  <% if (!isMine && m.sender) { %>
+  <img class="avatar chat-bubble__avatar" src="<%= profileImg(m.sender.profilepic) %>" alt="">
+  <% } %>
+  <div class="chat-bubble__content">
+    <% if (m.type === 'text') { %>
+    <p class="chat-bubble__text"><%= m.text %></p>
+    <% } else if (m.type === 'link') { %>
+    <p class="chat-bubble__text"><%= m.text %></p>
+    <a href="<%= m.linkUrl %>" target="_blank" rel="noopener" class="chat-link-card"><i class="fas fa-link"></i> <%= m.linkUrl %></a>
+    <% } else if (m.type === 'image') { %>
+    <img class="chat-bubble__image" src="/images/uploads/<%= encodeURIComponent(m.image) %>" alt="Shared image">
+    <% if (m.text && m.text.trim()) { %><p class="chat-bubble__text"><%= m.text %></p><% } %>
+    <% } else if (m.type === 'post' && m.post) { %>
+    <div class="chat-post-share">
+      <div class="chat-post-share__head">
+        <img class="avatar" src="<%= profileImg(m.post.user && m.post.user.profilepic) %>" alt="">
+        <strong><%= m.post.user ? m.post.user.username : 'post' %></strong>
+      </div>
+      <% if (m.post.image) { %>
+      <img src="/images/uploads/<%= encodeURIComponent(m.post.image) %>" alt="">
+      <% } %>
+      <% if (m.post.content && m.post.content.trim()) { %>
+      <p><%= m.post.content.trim().slice(0, 120) %><%= m.post.content.length > 120 ? '…' : '' %></p>
+      <% } %>
+      <a href="/feed#post-<%= m.post._id %>" class="text-link">View post</a>
+    </div>
+    <% } %>
+    <time class="chat-bubble__time"><%= timeAgo(m.createdAt) %></time>
+  </div>
+</div>

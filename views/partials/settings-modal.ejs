@@ -1,0 +1,64 @@
+<!-- Settings Modal -->
+<div class="settings-overlay" id="settingsOverlay" hidden>
+  <div class="settings-sheet" role="dialog" aria-label="Settings">
+    <div class="settings-sheet__head">
+      <h2>Settings</h2>
+      <button type="button" class="settings-sheet__close" id="closeSettings" aria-label="Close"><i class="fas fa-xmark"></i></button>
+    </div>
+    <nav class="settings-menu">
+      <a href="/profile/saved" class="settings-item">
+        <span class="settings-item__icon"><i class="fas fa-bookmark"></i></span>
+        <span class="settings-item__text"><strong>Saved posts</strong><small>Your bookmarks</small></span>
+        <i class="fas fa-chevron-right"></i>
+      </a>
+      <a href="/profile/upload" class="settings-item">
+        <span class="settings-item__icon"><i class="fas fa-camera"></i></span>
+        <span class="settings-item__text"><strong>Change profile photo</strong></span>
+        <i class="fas fa-chevron-right"></i>
+      </a>
+      <a href="/feed" class="settings-item">
+        <span class="settings-item__icon"><i class="fas fa-house"></i></span>
+        <span class="settings-item__text"><strong>Home feed</strong><small>Posts from everyone</small></span>
+        <i class="fas fa-chevron-right"></i>
+      </a>
+      <a href="/messages" class="settings-item">
+        <span class="settings-item__icon"><i class="far fa-comment-dots"></i></span>
+        <span class="settings-item__text"><strong>Messages</strong></span>
+        <i class="fas fa-chevron-right"></i>
+      </a>
+      <a href="/explore" class="settings-item">
+        <span class="settings-item__icon"><i class="fas fa-compass"></i></span>
+        <span class="settings-item__text"><strong>Explore</strong></span>
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </nav>
+    <a href="/logout" class="settings-item settings-item--logout">
+      <span class="settings-item__icon"><i class="fas fa-right-from-bracket"></i></span>
+      <span class="settings-item__text"><strong>Log out</strong></span>
+    </a>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const overlay = document.getElementById('settingsOverlay');
+    const closeBtn = document.getElementById('closeSettings');
+    const openBtn = document.getElementById('sidebarSettingsBtn');
+    
+    if (!overlay) return;
+    
+    const open = () => { 
+      overlay.hidden = false; 
+      document.body.style.overflow = 'hidden'; 
+    };
+    
+    const close = () => { 
+      overlay.hidden = true; 
+      document.body.style.overflow = ''; 
+    };
+    
+    if (openBtn) openBtn.addEventListener('click', open);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  })();
+</script>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="chat-page-body">
+  <div class="app-shell app-shell--chat">
+    <%- include('../partials/sidebar') %>
+
+    <div class="app-main app-main--single chat-layout">
+      <header class="chat-header">
+        <a href="/messages" class="chat-header__back"><i class="fas fa-arrow-left"></i></a>
+        <a href="/u/<%= other.username %>" class="chat-header__user">
+          <img class="avatar" src="<%= profileImg(other.profilepic) %>" alt="">
+          <div>
+            <strong><%= other.username %></strong>
+            <span><%= other.name %></span>
+          </div>
+        </a>
+      </header>
+
+      <div class="chat-messages" id="chatMessages" data-conversation="<%= conversation._id %>">
+        <% messages.forEach(function(m) { %>
+        <%- include('../partials/chat-bubble', { m: m, user: user }) %>
+        <% }) %>
+      </div>
+
+      <% if (sharePost) { %>
+      <div class="chat-share-preview" id="sharePreview">
+        <p>Sharing post to <strong><%= other.username %></strong></p>
+        <div class="chat-post-share">
+          <% if (sharePost.image) { %>
+          <img src="/images/uploads/<%= encodeURIComponent(sharePost.image) %>" alt="">
+          <% } %>
+          <p><%= (sharePost.content || '').trim().slice(0, 80) %></p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" id="sendShareBtn" data-post-id="<%= sharePost._id %>">Send post</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="cancelShareBtn">Cancel</button>
+      </div>
+      <% } %>
+
+      <form class="chat-compose" id="chatForm" enctype="multipart/form-data">
+        <input type="hidden" name="conversationId" value="<%= conversation._id %>">
+        <label class="chat-compose__attach" title="Photo">
+          <i class="fas fa-image"></i>
+          <input type="file" name="image" accept="image/*" id="chatImageInput">
+        </label>
+        <input type="text" name="text" id="chatTextInput" placeholder="Message, or paste a link..." autocomplete="off" maxlength="2000">
+        <button type="submit" class="chat-compose__send" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
+
+    <%- include('../partials/bottom-nav') %>
+  </div>
+
+  <script>
+    window.CHAT_CONFIG = {
+      conversationId: '<%= conversation._id %>',
+      profileImgBase: '/images/uploads/',
+      defaultAvatar: '<%= profileImg('') %>',
+      myId: '<%= user._id.toString() %>'
+    };
+  </script>
+  <script src="/javascripts/app.js"></script>
+  <script src="/javascripts/chat.js"></script>
+</body>
+</html>

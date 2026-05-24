@@ -1,14 +1,15 @@
 {
-  "name": "data_asso",
-  "version": "1.0.0",
+  "name": "social-sphere",
+  "version": "2.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "node app.js"
   },
-  "keywords": [],
+  "keywords": ["social", "express", "mongodb"],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "SocialSphere — connect, share, and discover",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

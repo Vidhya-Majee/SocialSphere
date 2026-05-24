@@ -1,0 +1,22 @@
+<% if (typeof suggestions !== 'undefined' && suggestions && suggestions.length) { %>
+<aside class="widget">
+  <h3>Suggested for you</h3>
+  <% suggestions.forEach(function(s) { %>
+  <div class="suggestion-row">
+    <a href="/u/<%= s.username %>">
+      <img class="avatar" src="<%= profileImg(s.profilepic) %>" alt="">
+    </a>
+    <div class="info">
+      <a href="/u/<%= s.username %>"><strong><%= s.username %></strong></a>
+      <span><%= s.name %></span>
+    </div>
+    <a href="/follow/<%= s._id %>?next=/feed" class="btn-follow">Follow</a>
+  </div>
+  <% }) %>
+</aside>
+<% } %>
+
+<footer class="widget text-muted" style="font-size:0.7rem;line-height:1.6">
+  <p>© <%= new Date().getFullYear() %> SocialSphere</p>
+  <p>About · Help · Privacy · Terms</p>
+</footer>

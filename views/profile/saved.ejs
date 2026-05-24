@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('../partials/sidebar') %>
+
+    <div class="app-main app-main--single">
+      <header class="mobile-header">
+        <a href="/profile" class="text-muted"><i class="fas fa-arrow-left"></i></a>
+        <h1 style="font-size:1rem">Saved</h1>
+        <span></span>
+      </header>
+
+      <div class="content-primary page-padding">
+        <% if (!posts.length) { %>
+        <div class="empty-state">
+          <i class="fas fa-bookmark"></i>
+          <h2>No saved posts</h2>
+          <p>Tap the bookmark on any post in your feed to save it here.</p>
+          <a href="/feed" class="btn btn-primary" style="width:auto;margin-top:1rem;display:inline-flex">Go to feed</a>
+        </div>
+        <% } else { %>
+        <% posts.forEach(function(post) { %>
+        <%- include('../partials/post-card', { post: post, user: user, redirectPath: '/profile/saved' }) %>
+        <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <%- include('../partials/bottom-nav') %>
+  </div>
+  <script src="/javascripts/app.js"></script>
+</body>
+</html>

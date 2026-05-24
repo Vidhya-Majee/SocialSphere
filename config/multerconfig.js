@@ -1,25 +1,33 @@
-const multer=require('multer')
-const crypto =require('crypto')
-const path =require('path')
+const multer = require('multer');
+const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 
-
-//disk storage
+const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
+fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './public/images/uploads')
+  destination(req, file, cb) {
+    cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-crypto.randomBytes(12,function (err,name) {
-  const fn=name.toString('hex')+path.extname(file.originalname)
-  cb(null, fn)
-   
-})
+  filename(req, file, cb) {
+    crypto.randomBytes(12, (err, name) => {
+      if (err) return cb(err);
+      const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+      cb(null, name.toString('hex') + ext);
+    });
+  },
+});
 
-  }
-})
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter(req, file, cb) {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed'));
+    }
+    cb(null, true);
+  },
+});
 
-const upload = multer({ storage: storage })
-//export upload variable
-
-module.exports=upload
+module.exports = upload;

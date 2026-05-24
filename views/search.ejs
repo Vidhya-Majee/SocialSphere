@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('partials/sidebar') %>
+
+    <div class="app-main app-main--single">
+      <header class="mobile-header">
+        <h1>Search</h1>
+      </header>
+
+      <div class="content-primary">
+        <div class="search-bar-wrap">
+          <form class="search-form" action="/search" method="get">
+            <i class="fas fa-magnifying-glass text-muted"></i>
+            <input type="search" name="q" value="<%= q %>" placeholder="Search people and posts" autofocus>
+          </form>
+        </div>
+
+        <% if (q) { %>
+        <section>
+          <h3 class="text-muted" style="padding:0.5rem 1rem;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em">People</h3>
+          <% if (!users.length) { %>
+          <p class="text-muted" style="padding:1rem">No users found for "<%= q %>"</p>
+          <% } %>
+          <% users.forEach(function(u) { %>
+          <div class="user-result">
+            <a href="/u/<%= u.username %>" style="display:flex;align-items:center;gap:0.75rem;flex:1">
+              <img class="avatar" style="width:44px;height:44px" src="<%= profileImg(u.profilepic) %>" alt="">
+              <div>
+                <strong><%= u.username %></strong>
+                <span class="text-muted" style="display:block;font-size:0.8rem"><%= u.name %></span>
+              </div>
+            </a>
+            <a href="/messages/with/<%= u.username %>" class="btn btn-secondary" style="width:auto;margin:0;padding:0.4rem 0.75rem;font-size:0.75rem">Message</a>
+          </div>
+          <% }) %>
+        </section>
+
+        <% if (posts.length) { %>
+        <section style="margin-top:1rem">
+          <h3 class="text-muted" style="padding:0.5rem 1rem;font-size:0.75rem;text-transform:uppercase">Posts</h3>
+          <% posts.forEach(function(post) { %>
+          <%- include('partials/post-card', { post: post, user: user, redirectPath: '/search?q=' + encodeURIComponent(q) }) %>
+          <% }) %>
+        </section>
+        <% } %>
+        <% } else { %>
+        <div class="empty-state">
+          <i class="fas fa-magnifying-glass"></i>
+          <p>Find friends, creators, and posts</p>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <%- include('partials/bottom-nav') %>
+  </div>
+  <script src="/javascripts/app.js"></script>
+</body>
+</html>
