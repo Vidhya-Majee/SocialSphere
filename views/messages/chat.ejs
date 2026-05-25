@@ -30,7 +30,7 @@
         <p>Sharing post to <strong><%= other.username %></strong></p>
         <div class="chat-post-share">
           <% if (sharePost.image) { %>
-          <img src="/images/uploads/<%= encodeURIComponent(sharePost.image) %>" alt="">
+          <img class="<%= sharePost.filter || '' %>" src="/images/uploads/<%= encodeURIComponent(sharePost.image) %>" alt="">
           <% } %>
           <p><%= (sharePost.content || '').trim().slice(0, 80) %></p>
         </div>
@@ -57,7 +57,7 @@
     window.CHAT_CONFIG = {
       conversationId: '<%= conversation._id %>',
       profileImgBase: '/images/uploads/',
-      defaultAvatar: '<%= profileImg('') %>',
+      defaultAvatar: '<%= profileImg("") %>',
       myId: '<%= user._id.toString() %>'
     };
   </script>

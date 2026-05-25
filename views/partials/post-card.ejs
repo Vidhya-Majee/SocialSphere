@@ -35,7 +35,7 @@
         <button type="submit" class="post-menu__btn post-menu__btn--danger" title="Delete"><i class="fas fa-trash"></i></button>
       </form>
       <% } %>
-      <a href="/messages?share=<%= post._id %>" class="post-menu__btn" title="Share in chat"><i class="fas fa-paper-plane"></i></a>
+      <button type="button" class="post-menu__btn" title="Share in chat" onclick="openQuickShare('<%= post._id %>')" style="background:none;border:none;cursor:pointer;padding:0.25rem;"><i class="fas fa-paper-plane"></i></button>
     </div>
   </header>
 
@@ -46,7 +46,9 @@
   <% } %>
 
   <% if (post.image) { %>
-  <img class="post-image" src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="Post">
+  <div class="post-image-wrap" style="position: relative; overflow: hidden; cursor: pointer;">
+    <img class="post-image <%= post.filter || '' %>" src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="Post">
+  </div>
   <% } %>
 
   <div class="post-actions">
@@ -55,7 +57,7 @@
       <i class="<%= liked ? 'fas' : 'far' %> fa-heart"></i>
     </a>
     <a href="#comment-input-<%= post._id %>" aria-label="Comment"><i class="far fa-comment"></i></a>
-    <a href="/messages?share=<%= post._id %>" aria-label="Share in messages"><i class="far fa-paper-plane"></i></a>
+    <button type="button" aria-label="Share in messages" onclick="openQuickShare('<%= post._id %>')" style="background:none;border:none;cursor:pointer;padding:0.25rem;color:var(--text);font-size:1.35rem;display:inline-flex;align-items:center;justify-content:center;"><i class="far fa-paper-plane"></i></button>
     <a href="/save/<%= post._id %>?next=<%= encodeURIComponent(back) %>"
        class="post-save<%= isSaved ? ' saved' : '' %>" aria-label="<%= isSaved ? 'Unsave' : 'Save' %>">
       <i class="<%= isSaved ? 'fas' : 'far' %> fa-bookmark"></i>

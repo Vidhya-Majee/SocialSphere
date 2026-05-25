@@ -19,7 +19,7 @@
         <strong><%= m.post.user ? m.post.user.username : 'post' %></strong>
       </div>
       <% if (m.post.image) { %>
-      <img src="/images/uploads/<%= encodeURIComponent(m.post.image) %>" alt="">
+      <img class="<%= m.post.filter || '' %>" src="/images/uploads/<%= encodeURIComponent(m.post.image) %>" alt="">
       <% } %>
       <% if (m.post.content && m.post.content.trim()) { %>
       <p><%= m.post.content.trim().slice(0, 120) %><%= m.post.content.length > 120 ? '…' : '' %></p>

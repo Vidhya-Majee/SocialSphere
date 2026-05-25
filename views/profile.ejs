@@ -89,7 +89,7 @@
           <% profileUser.posts.forEach(function(post) { %>
           <a href="/feed#post-<%= post._id %>" class="grid-post">
             <% if (post.image) { %>
-            <img src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="">
+            <img class="<%= post.filter || '' %>" src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="">
             <% } else { %>
             <div class="grid-text"><%= post.content %></div>
             <% } %>

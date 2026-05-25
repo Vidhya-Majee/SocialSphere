@@ -32,9 +32,9 @@
         <h2 class="sr-only">Discover posts</h2>
         <div class="explore-grid">
           <% posts.forEach(function(post) { %>
-          <a href="/u/<%= post.user.username %>" class="explore-tile">
+          <a href="/feed#post-<%= post._id %>" class="explore-tile">
             <% if (post.image) { %>
-            <img src="/images/uploads/<%= post.image %>" alt="">
+            <img class="<%= post.filter || '' %>" src="/images/uploads/<%= post.image %>" alt="">
             <% } else { %>
             <div class="tile-text"><%= post.content.slice(0, 80) %></div>
             <% } %>

@@ -17,22 +17,46 @@
       </header>
 
       <div class="content-primary page-padding">
+        <% 
+          const userHasStories = user.posts && user.posts.length > 0;
+          
+          const otherStories = storyUsers.filter(s => s._id.toString() !== user._id.toString() && s.posts && s.posts.length > 0);
+          
+          const activeStories = [];
+          let userStoryIndex = -1;
+          if (userHasStories) {
+            userStoryIndex = 0;
+            activeStories.push(user);
+          }
+          
+          const otherStoriesWithIndices = otherStories.map((s, idx) => {
+            const storyIndex = userStoryIndex !== -1 ? idx + 1 : idx;
+            activeStories.push(s);
+            return { user: s, storyIndex };
+          });
+        %>
         <section class="stories-bar" aria-label="Stories">
-          <a href="/profile/upload" class="story-item">
+          <div class="story-item" style="position:relative; width:72px; text-align:center; flex-shrink:0;">
+            <button type="button" 
+                    data-has-stories="<%= userHasStories %>"
+                    onclick="this.dataset.hasStories === 'true' ? openStoryViewer(0) : triggerStoryUpload()"
+                    style="background:none;border:none;padding:0;font:inherit;cursor:pointer;width:100%;display:flex;flex-direction:column;align-items:center;gap:0.35rem;">
+              <div class="story-ring" <%= userHasStories ? '' : 'style="background:var(--border);"' %>>
+                <img src="<%= profileImg(user.profilepic) %>" alt="Your story" style="width: 62px; height: 62px; border-radius: 50%; border: 3px solid var(--bg-elevated); object-fit: cover;">
+              </div>
+              <span style="font-size: 0.7rem; color: var(--text); max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Your story</span>
+            </button>
+            <button type="button" onclick="triggerStoryUpload()" aria-label="Upload story" style="position:absolute; bottom:20px; right:6px; width:20px; height:20px; border-radius:50%; background:#0095f6; border:2.5px solid var(--bg-elevated); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.65rem; cursor:pointer; padding:0; box-sizing:content-box; z-index:10;">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <% otherStoriesWithIndices.forEach(function(item) { %>
+          <button type="button" class="story-item" onclick="openStoryViewer('<%= item.storyIndex %>')" style="background:none;border:none;padding:0;font:inherit;cursor:pointer;width:72px;">
             <div class="story-ring">
-              <img src="<%= profileImg(user.profilepic) %>" alt="Your story">
+              <img src="<%= profileImg(item.user.profilepic) %>" alt="<%= item.user.username %>">
             </div>
-            <span>Your story</span>
-          </a>
-          <% storyUsers.forEach(function(s) { %>
-          <% if (s._id.toString() !== user._id.toString()) { %>
-          <a href="/u/<%= s.username %>" class="story-item">
-            <div class="story-ring">
-              <img src="<%= profileImg(s.profilepic) %>" alt="<%= s.username %>">
-            </div>
-            <span><%= s.username %></span>
-          </a>
-          <% } %>
+            <span><%= item.user.username %></span>
+          </button>
           <% }) %>
         </section>
 
@@ -43,14 +67,53 @@
         <% } %>
 
         <div class="card compose-card">
-          <form action="/post" method="post" enctype="multipart/form-data">
+          <form action="/post" method="post" enctype="multipart/form-data" id="postComposeForm">
             <input type="hidden" name="redirect" value="/feed">
+            <input type="hidden" name="filter" id="postFilterInput" value="filter-normal">
             <textarea name="content" placeholder="What's on your mind<%= user.name ? ', ' + user.name.split(' ')[0] : '' %>?" maxlength="2200"></textarea>
+            
+            <!-- Filter Preview Panel -->
+            <div class="post-preview-container" id="postPreviewContainer" style="display: none; margin-bottom: 0.85rem; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); position: relative;">
+              <img id="postPreviewImage" src="" alt="Preview" style="width: 100%; max-height: 400px; object-fit: cover;">
+              
+              <!-- Horizontal Filter Selector -->
+              <div class="filter-selector-wrap" style="display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.65rem; background: var(--bg-input); border-top: 1px solid var(--border); scrollbar-width: none;">
+                <div class="filter-option" data-filter="filter-normal" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid var(--text-link); margin: 0 auto 4px;"><img class="filter-normal" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">Normal</span>
+                </div>
+                <div class="filter-option" data-filter="filter-warm" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 4px;"><img class="filter-warm" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">Warm</span>
+                </div>
+                <div class="filter-option" data-filter="filter-cool" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 4px;"><img class="filter-cool" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">Cool</span>
+                </div>
+                <div class="filter-option" data-filter="filter-vintage" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 4px;"><img class="filter-vintage" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">Vintage</span>
+                </div>
+                <div class="filter-option" data-filter="filter-grayscale" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 4px;"><img class="filter-grayscale" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">B&W</span>
+                </div>
+                <div class="filter-option" data-filter="filter-sepia" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 4px;"><img class="filter-sepia" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">Sepia</span>
+                </div>
+                <div class="filter-option" data-filter="filter-dramatic" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 60px;">
+                  <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 4px;"><img class="filter-dramatic" src="" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                  <span style="font-size: 0.65rem; font-weight: 500;">Dramatic</span>
+                </div>
+              </div>
+            </div>
+
             <div class="compose-actions">
               <label>
                 <i class="far fa-image"></i>
                 <span data-file-name>Photo</span>
-                <input type="file" name="image" accept="image/*" data-file-label="[data-file-name]">
+                <input type="file" name="image" id="composeImageInput" accept="image/*" data-file-label="[data-file-name]">
               </label>
               <button type="submit" class="btn btn-primary" style="width:auto;margin:0">Share</button>
             </div>
@@ -78,6 +141,180 @@
 
     <%- include('partials/bottom-nav') %>
   </div>
+
+  <!-- Fullscreen Stories Viewer Modal -->
+  <div id="storyViewerModal" class="stories-viewer-overlay">
+    <button id="storyDeleteBtn" style="display: none; position: absolute; top: 20px; right: 65px; background: none; border: none; color: #ff3b30; font-size: 1.8rem; cursor: pointer; z-index: 1010;" title="Delete story permanently"><i class="far fa-trash-can"></i></button>
+    <button id="storyCloseBtn" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; z-index: 1010;"><i class="fas fa-times"></i></button>
+
+    <div class="story-viewer-container">
+      <!-- Top Progress Bars and User Header -->
+      <div style="position: absolute; top: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0)); z-index: 1005;">
+        <div id="storyProgressIndicators" style="display: flex; gap: 4px; margin-bottom: 12px;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <a id="storyUserLink" href="" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+            <img id="storyUserAvatar" src="" style="width: 38px; height: 38px; border-radius: 50%; border: 2px solid #fff; object-fit: cover;">
+            <div>
+              <strong id="storyUsername" style="color: #fff; font-size: 0.95rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8); font-weight: 600;"></strong>
+              <span id="storyTime" style="color: rgba(255,255,255,0.75); font-size: 0.75rem; display: block; text-shadow: 0 1px 3px rgba(0,0,0,0.8);"></span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Slide Body -->
+      <div id="storySlideBody" style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative;">
+        <div id="storyTapLeft" style="position: absolute; left: 0; top: 0; bottom: 0; width: 33%; z-index: 1004; cursor: pointer;"></div>
+        <div id="storyTapRight" style="position: absolute; right: 0; top: 0; bottom: 0; width: 67%; z-index: 1004; cursor: pointer;"></div>
+        <div id="storyFallbackBg" style="position: absolute; inset: 0; filter: blur(25px) brightness(0.45); background-size: cover; background-position: center; display: none; z-index: 1001;"></div>
+        <div id="storySlideContent" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 1002;"></div>
+      </div>
+
+      <!-- Bottom Message Input -->
+      <div style="padding: 15px 15px calc(15px + var(--safe-bottom)); background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0)); z-index: 1005;">
+        <form id="storyReplyForm" style="display: flex; align-items: center; gap: 10px;">
+          <input type="text" id="storyReplyText" placeholder="Send message..." style="flex: 1; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 10px 18px; color: #fff; font-size: 0.9rem; outline: none; transition: border-color 0.2s;" autocomplete="off">
+          <button type="submit" style="background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; padding: 5px; transition: transform 0.15s;"><i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick-Share Sheet Modal -->
+  <div id="quickShareOverlay" class="quick-share-overlay">
+    <div id="quickShareSheet" class="quick-share-sheet">
+      <div style="width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1.25rem; opacity: 0.7;"></div>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0;">Share to</h3>
+        <button onclick="closeQuickShare()" style="background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; padding: 5px;"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div style="position: relative; margin-bottom: 1.25rem;">
+        <i class="fas fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+        <input type="text" id="quickShareSearch" placeholder="Search friends..." style="width: 100%; padding: 10px 10px 10px 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-input); color: var(--text); outline: none; font-size: 0.9rem; transition: border-color 0.2s;">
+      </div>
+
+      <div id="quickShareList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; padding-bottom: 1rem; scrollbar-width: none;">
+        <% const shareTargets = (user.following && user.following.length) ? user.following : suggestions; %>
+        <% shareTargets.forEach(function(f) { %>
+          <div class="quick-share-row" data-username="<%= f.username.toLowerCase() %>" data-name="<%= f.name ? f.name.toLowerCase() : '' %>">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img src="<%= profileImg(f.profilepic) %>" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border);">
+              <div>
+                <strong style="font-size: 0.9rem; display: block; font-weight: 600;"><%= f.username %></strong>
+                <span style="font-size: 0.75rem; color: var(--text-muted);"><%= f.name || '' %></span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary quick-send-btn" data-to-username="<%= f.username %>" style="width: auto; margin: 0; padding: 0.45rem 1.15rem; font-size: 0.8rem; border-radius: 20px; transition: all 0.2s;">
+              Send
+            </button>
+          </div>
+        <% }) %>
+        <% if (!shareTargets.length) { %>
+          <p class="text-muted" style="text-align: center; padding: 2rem; font-size: 0.9rem;">No users available to share with.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Story Modal -->
+  <div id="storyUploadModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(8px);">
+    <div style="width: 100%; max-width: 420px; background: var(--bg-elevated); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.5rem; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 1rem; margin: 15px;">
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--text);"><i class="fas fa-plus-circle" style="color: var(--text-link);"></i> Add to Story</h3>
+        <button type="button" onclick="closeStoryUploadModal()" style="background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; padding: 5px;"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form action="/post" method="POST" enctype="multipart/form-data" id="storyUploadForm">
+        <input type="hidden" name="isStory" value="true">
+        <input type="hidden" name="filter" id="storyFilterInput" value="filter-normal">
+        <input type="hidden" name="redirect" value="/feed">
+
+        <!-- Image Preview Frame -->
+        <div id="storyPreviewWrap" style="display: none; text-align: center; margin-bottom: 1rem; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--bg-input); position: relative;">
+          <img id="storyPreviewImg" src="" style="width: 100%; max-height: 250px; object-fit: contain;">
+          <button type="button" onclick="cancelSelectedStoryImage()" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 15;"><i class="fas fa-times"></i></button>
+        </div>
+
+        <!-- Filter Selector -->
+        <div id="storyFilterSelector" style="display: none; margin-bottom: 1rem;">
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem">Select Filter</label>
+          <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 0; scrollbar-width: none;">
+            <div class="story-filter-opt" data-filter="filter-normal" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid var(--text-link); margin: 0 auto 3px;"><img class="filter-normal story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">Normal</span>
+            </div>
+            <div class="story-filter-opt" data-filter="filter-warm" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 3px;"><img class="filter-warm story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">Warm</span>
+            </div>
+            <div class="story-filter-opt" data-filter="filter-cool" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 3px;"><img class="filter-cool story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">Cool</span>
+            </div>
+            <div class="story-filter-opt" data-filter="filter-vintage" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 3px;"><img class="filter-vintage story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">Vintage</span>
+            </div>
+            <div class="story-filter-opt" data-filter="filter-grayscale" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 3px;"><img class="filter-grayscale story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">B&W</span>
+            </div>
+            <div class="story-filter-opt" data-filter="filter-sepia" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 3px;"><img class="filter-sepia story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">Sepia</span>
+            </div>
+            <div class="story-filter-opt" data-filter="filter-dramatic" style="flex-shrink: 0; text-align: center; cursor: pointer; width: 55px;">
+              <div style="width: 45px; height: 45px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; margin: 0 auto 3px;"><img class="filter-dramatic story-filter-thumb" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <span style="font-size: 0.6rem; font-weight: 500; color: var(--text);">Dramatic</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Upload Selector button -->
+        <div id="storyUploadBtnWrap" style="text-align: center; padding: 2.25rem 1rem; border: 2px dashed var(--border); border-radius: 8px; cursor: pointer; transition: background 0.2s;" onclick="document.getElementById('storyImageInput').click();">
+          <i class="far fa-image" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.5rem; display: block;"></i>
+          <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-link);">Choose photo to share</span>
+          <input type="file" name="image" id="storyImageInput" accept="image/*" style="display: none;">
+        </div>
+
+        <!-- Text Input (Optional description) -->
+        <div style="margin-top: 1rem;">
+          <textarea name="content" id="storyContentText" placeholder="Add a caption to your story... (optional)" style="width: 100%; min-height: 60px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-input); color: var(--text); resize: none; outline: none; font-size: 0.9rem;"></textarea>
+        </div>
+
+        <button type="submit" id="storySubmitBtn" class="btn btn-primary" style="margin-top: 1rem; width: 100%;" disabled>
+          Post Story
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Story Data HTML Serialization (removes JavaScript IDE parsing errors) -->
+  <%
+    const storiesJSON = JSON.stringify(
+      activeStories.map(function(s) {
+        const slides = (s.posts || []).map(function(p) {
+          return {
+            id: p._id.toString(),
+            image: p.image ? "/images/uploads/" + encodeURIComponent(p.image) : "",
+            content: p.content || ""
+          };
+        });
+        
+        return {
+          userId: s._id.toString(),
+          username: s.username,
+          profilepic: profileImg(s.profilepic),
+          slides: slides
+        };
+      })
+    );
+  %>
+  <div id="storyDataBridge" data-stories="<%= storiesJSON %>" data-logged-in-user="<%= user.username %>" style="display: none;"></div>
+
   <script src="/javascripts/app.js"></script>
 </body>
 </html>

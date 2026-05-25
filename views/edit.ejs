@@ -21,7 +21,7 @@
             <textarea name="content" maxlength="2200" required><%= post.content %></textarea>
             <% if (post.image) { %>
             <div style="margin-bottom:1rem">
-              <img src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="" style="max-height:200px;border-radius:8px;width:100%;object-fit:cover">
+              <img class="<%= post.filter || '' %>" src="/images/uploads/<%= encodeURIComponent(post.image) %>" alt="" style="max-height:200px;border-radius:8px;width:100%;object-fit:cover">
               <label style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted)">
                 <input type="checkbox" name="removeImage" value="1"> Remove photo
               </label>

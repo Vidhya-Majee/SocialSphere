@@ -1,8 +1,8 @@
-<div align="center">
-
 # 🌐 SocialSphere
 
 ### *Connect · Share · Discover*
+
+<div align="center">
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
@@ -12,11 +12,9 @@
 
 <br/>
 
-A beautiful, full-stack social media platform built with **Express 5** and **MongoDB** — featuring glassmorphism design, dark / light themes, real-time messaging, an Instagram-style feed, and much more.
+SocialSphere is a premium, full-stack social media application crafted with **Node.js**, **Express 5**, and **MongoDB (Mongoose 8)**. It features a modern, ultra-responsive glassmorphism interface, native support for light & dark modes, interactive image filters, self-destructing stories, real-time message polling, and comprehensive profile customization.
 
-<br/>
-
-[🚀 Quick Start](#-quick-start) · [✨ Features](#-features) · [🏗️ Architecture](#%EF%B8%8F-architecture) · [📡 API Routes](#-api-routes) · [🤝 Contributing](#-contributing)
+[🚀 Quick Start](#-quick-start) · [✨ Features](#-features) · [🧬 Data Architecture](#-data-architecture) · [🏗️ Design Decisions](#%EF%B8%8F-key-design-decisions) · [📡 Route Directory](#-route-directory)
 
 </div>
 
@@ -24,300 +22,44 @@ A beautiful, full-stack social media platform built with **Express 5** and **Mon
 
 ## ✨ Features
 
-<table>
-<tr>
-<td width="50%">
+### 📖 Immersive 24h Stories System
+* **Add to Story**: Share image updates with optional text captions directly to your profile's story track.
+* **Creative CSS Filters**: Apply filters (*Normal*, *Warm*, *Cool*, *Vintage*, *B&W*, *Sepia*, *Dramatic*) inline before posting.
+* **Interactive Viewer**: Immersive fullscreen carousel experience featuring active user headers, chronological slide progress bars, click/tap left-right navigation, and instant direct replies.
+* **Auto-Self-Destruct**: Automatic cron-like database sweeps that purge stories older than 24 hours from the database on every feed load.
 
-### 🔐 Authentication & Security
-- Secure registration & login with **bcrypt** hashing
-- **JWT**-based session management via HTTP-only cookies
-- Auto-redirect for authenticated / unauthenticated users
-- 7-day persistent sessions
+### 📰 Interactive Chronological Feed
+* **Multi-Media Composers**: Publish rich text and image posts with instant live image preview and custom filter rendering.
+* **Real-time AJAX Likes**: Like and unlike posts instantly without page refreshes using an optimized REST handler.
+* **Threaded Comments**: Engage in threads with full capabilities to append comments or delete your own contributions.
+* **Quick-Share Engine**: An overlay modal for immediately sending any feed post as a DM card to following/suggested users.
 
-</td>
-<td width="50%">
+### 💬 Real-Time Messaging & Direct Inbox
+* **Consolidated Inbox**: Overview of active message threads sorted by latest activity, showcasing preview snippets and visual unread badges.
+* **Rich 1-on-1 Chats**: Send standard text, attach images, or paste links to render auto-parsed hyperlink messages.
+* **Shared Post Embeds**: Dynamically renders high-fidelity post attachments shared straight from the main feed.
+* **AJAX Polling Loop**: Dynamic message synchronization engine using client-side `after` timestamp paging to fetch new messages seamlessly.
 
-### 📰 Feed & Posts
-- Instagram-style chronological feed (latest 50 posts)
-- Create text & image posts (up to 2 200 chars)
-- Edit, delete, and update posts with images
-- ❤️ Like / unlike toggle
-- 💬 Threaded comments with delete support
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 👤 Profiles
-- Custom profile pictures via **Multer** upload
-- Editable bio (160 chars)
-- Posts grid with like & comment overlays
-- Follower / Following counts & lists
-- View any user's profile at `/u/:username`
-
-</td>
-<td>
-
-### 💬 Direct Messaging
-- Full inbox with conversation list
-- 1-on-1 real-time chat view
-- Send **text**, **images**, **links**, and **shared posts**
-- Auto-detected link messages
-- Live message polling API
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 🔍 Search & Explore
-- Regex-powered user & post search
-- Explore page with trending users (by follower count)
-- Discovery grid for all recent posts
-
-</td>
-<td>
-
-### 🎨 UI / UX
-- **Glassmorphism** design language
-- 🌙 Dark / ☀️ Light theme toggle with persistence
-- Stories bar, sidebar navigation, bottom nav (mobile)
-- Smooth animations & micro-interactions
-- Fully responsive — mobile, tablet, desktop
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 🔖 Save & Bookmark
-- Save / unsave any post
-- Dedicated "Saved Posts" page
-- Quick-access from profile settings panel
-
-</td>
-<td>
-
-### 👥 Social Graph
-- Follow / unfollow any user
-- Mutual follower/following tracking
-- "People you may know" suggestions on feed
-
-</td>
-</tr>
-</table>
+### 🎨 Premium Glassmorphism UI/UX
+* **Dual Themes**: Complete light-to-dark stylesheet built on CSS custom variables, persisting user selection in local storage.
+* **Mobile-First Layouts**: Reusable EJS layout structure featuring adaptive desktop sidebars, mobile headers, and bottom tab sheets.
+* **Micro-interactions**: Subtle hover states, smooth transitions, loading skeletons, and interactive modal sheets.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Ecosystem
 
-| Layer        | Technology                                                                                                |
-|:-------------|:----------------------------------------------------------------------------------------------------------|
-| **Runtime**  | [Node.js](https://nodejs.org/) 18+                                                                        |
-| **Framework**| [Express 5](https://expressjs.com/) — next-gen routing & middleware                                       |
-| **Database** | [MongoDB](https://www.mongodb.com/) with [Mongoose 8](https://mongoosejs.com/) ODM                       |
-| **Templating** | [EJS](https://ejs.co/) — server-side rendering with reusable partials                                  |
-| **Auth**     | [bcrypt](https://www.npmjs.com/package/bcrypt) + [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)|
-| **Uploads**  | [Multer 2](https://www.npmjs.com/package/multer) — disk storage, 10 MB limit, image-only filter           |
-| **Styling**  | Custom CSS with CSS variables, glassmorphism, dark/light themes                                           |
-| **Icons**    | [Font Awesome](https://fontawesome.com/) 6                                                                |
+* **Backend Engine**: Node.js & Express 5 (features native `async` error handling and cleaner routing controllers).
+* **Database & Modeler**: MongoDB Atlas & Mongoose 8 (utilizes strict typing, auto-population, and complex aggregations).
+* **View Layer**: Embedded JavaScript (EJS) using nested layout partials (`head`, `sidebar`, `bottom-nav`).
+* **Authentication**: JSON Web Tokens (JWT) stored in secure, stateless HTTP-only cookies with 7-day expiration.
+* **Media Handling**: Multer storage backend with strict image MIME-type validation and deterministic unique file naming.
 
 ---
 
-## 🏗️ Architecture
+## 🧬 Data Architecture
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                        Client (Browser)                      │
-│   EJS Templates  ·  Custom CSS  ·  Vanilla JS (chat.js)     │
-└────────────────────────────┬─────────────────────────────────┘
-                             │  HTTP / Cookies (JWT)
-┌────────────────────────────▼─────────────────────────────────┐
-│                     Express 5  (app.js)                       │
-│  ┌─────────┐  ┌───────────┐  ┌──────────┐  ┌─────────────┐  │
-│  │  Auth   │  │   Feed    │  │ Profile  │  │  Messages   │  │
-│  │ Middleware│  │  Routes   │  │ Routes   │  │  Routes     │  │
-│  └─────────┘  └───────────┘  └──────────┘  └─────────────┘  │
-│  ┌─────────┐  ┌───────────┐  ┌──────────┐                   │
-│  │ Search  │  │  Explore  │  │  Social  │                   │
-│  │ Routes  │  │  Routes   │  │ (Follow) │                   │
-│  └─────────┘  └───────────┘  └──────────┘                   │
-└────────────────────────────┬─────────────────────────────────┘
-                             │  Mongoose ODM
-┌────────────────────────────▼─────────────────────────────────┐
-│                         MongoDB                              │
-│   Users  ·  Posts  ·  Messages  ·  Conversations             │
-└──────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📂 Project Structure
-
-```
-SocialSphere/
-├── app.js                    # Main server — routes, middleware, DB connect
-├── package.json
-├── .env                      # Environment variables (see below)
-│
-├── config/
-│   ├── defaults.js           # Default profile pic & legacy avatar migration
-│   └── multerconfig.js       # Multer disk storage + image filter
-│
-├── models/
-│   ├── user.js               # User schema (profile, social graph, saved posts)
-│   ├── post.js               # Post + embedded Comment sub-schema
-│   ├── conversation.js       # Conversation (1-on-1 DM threads)
-│   └── message.js            # Message (text / image / link / shared post)
-│
-├── routes/
-│   └── messages.js           # All /messages/* and /api/messages/* routes
-│
-├── views/
-│   ├── index.ejs             # Registration page
-│   ├── login.ejs             # Login page
-│   ├── feed.ejs              # Home feed
-│   ├── explore.ejs           # Explore / discover page
-│   ├── search.ejs            # Search results
-│   ├── profile.ejs           # User profile (own + others)
-│   ├── profileupload.ejs     # Profile picture upload
-│   ├── edit.ejs              # Edit post
-│   ├── partials/
-│   │   ├── head.ejs          # <head> meta, fonts, CSS
-│   │   ├── sidebar.ejs       # Desktop sidebar navigation
-│   │   ├── bottom-nav.ejs    # Mobile bottom navigation
-│   │   ├── post-card.ejs     # Reusable post card component
-│   │   ├── suggestions.ejs   # "People you may know" widget
-│   │   ├── chat-bubble.ejs   # Chat message bubble component
-│   │   └── settings-modal.ejs# Settings modal overlay
-│   ├── messages/
-│   │   ├── inbox.ejs         # Conversations list
-│   │   └── chat.ejs          # Chat thread view
-│   └── profile/
-│       ├── saved.ejs         # Saved / bookmarked posts
-│       └── settings.ejs      # Profile settings
-│
-└── public/
-    ├── stylesheets/
-    │   └── app.css           # Full design system (~35 KB)
-    ├── javascripts/
-    │   ├── app.js            # Theme toggle, file labels, UI helpers
-    │   └── chat.js           # Real-time message polling & send
-    └── images/
-        └── uploads/          # User-uploaded images (gitignored)
-```
-
----
-
-## 📡 API Routes
-
-### Authentication
-| Method | Route          | Description                |
-|:-------|:---------------|:---------------------------|
-| `GET`  | `/`            | Registration page          |
-| `POST` | `/register`   | Create account             |
-| `GET`  | `/login`       | Login page                 |
-| `POST` | `/login`       | Authenticate & set cookie  |
-| `GET`  | `/logout`      | Clear session & redirect   |
-
-### Feed & Posts
-| Method | Route                    | Description                              |
-|:-------|:-------------------------|:-----------------------------------------|
-| `GET`  | `/feed`                  | Home feed (latest 50 posts)              |
-| `POST` | `/post`                  | Create new post (text + optional image)  |
-| `GET`  | `/like/:id`              | Toggle like on a post                    |
-| `POST` | `/comment/:id`           | Add comment to a post                    |
-| `POST` | `/comment/:postId/delete/:commentId` | Delete own comment           |
-| `GET`  | `/edit/:id`              | Edit post form                           |
-| `POST` | `/update/:id`            | Update post content / image              |
-| `POST` | `/delete/:id`            | Delete own post                          |
-
-### Profiles & Social
-| Method | Route                 | Description                         |
-|:-------|:----------------------|:------------------------------------|
-| `GET`  | `/profile`            | Own profile                         |
-| `GET`  | `/u/:username`        | Any user's profile                  |
-| `POST` | `/profile/bio`        | Update bio                          |
-| `GET`  | `/profile/upload`     | Profile picture upload page         |
-| `POST` | `/upload`             | Upload new profile picture          |
-| `GET`  | `/profile/saved`      | View saved / bookmarked posts       |
-| `GET`  | `/save/:id`           | Toggle save / unsave a post         |
-| `GET`  | `/follow/:id`         | Toggle follow / unfollow a user     |
-
-### Search & Explore
-| Method | Route          | Description                           |
-|:-------|:---------------|:--------------------------------------|
-| `GET`  | `/search?q=`   | Search users & posts by keyword       |
-| `GET`  | `/explore`     | Explore page with trending users      |
-
-### Direct Messages
-| Method | Route                          | Description                              |
-|:-------|:-------------------------------|:-----------------------------------------|
-| `GET`  | `/messages`                    | Inbox — list all conversations           |
-| `GET`  | `/messages/with/:username`     | Open chat thread with a user             |
-| `GET`  | `/api/messages/:conversationId`| Polling API — fetch new messages (JSON)  |
-| `POST` | `/messages/send`               | Send message (text / image / link / post)|
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **Node.js** ≥ 18
-- **MongoDB** instance (local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
-
-### 1 · Clone the repository
-
-```bash
-git clone https://github.com/Vidhya-Majee/SocialSphere.git
-cd SocialSphere
-```
-
-### 2 · Install dependencies
-
-```bash
-npm install
-```
-
-### 3 · Configure environment variables
-
-Create a `.env` file in the project root:
-
-```env
-MONGODB_URI=mongodb://localhost:36106/socialsphere
-JWT_SECRET=your_secret_key_here
-PORT=5000
-```
-
-> [!TIP]
-> For production, use a strong random string for `JWT_SECRET`. Generate one with:
-> ```bash
-> node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-> ```
-
-### 4 · Start the server
-
-```bash
-# Production
-npm start
-
-# Development
-npm run dev
-```
-
-### 5 · Open in browser
-
-```
-http://localhost:5000
-```
-
-🎉 **That's it!** Register an account and start exploring.
-
----
-
-## 📊 Data Models
+SocialSphere relies on highly relational Mongoose models optimized for querying speed and sub-document integrity.
 
 ```mermaid
 erDiagram
@@ -336,6 +78,8 @@ erDiagram
         ObjectId _id
         String   content
         String   image
+        String   filter
+        Boolean  isStory
         Date     date
     }
     COMMENT {
@@ -355,6 +99,7 @@ erDiagram
         String   text
         String   image
         String   linkUrl
+        Boolean  read
         Date     createdAt
     }
 
@@ -362,7 +107,7 @@ erDiagram
     USER ||--o{ COMMENT     : "writes"
     USER }o--o{ USER        : "follows"
     USER ||--o{ POST        : "saves"
-    POST ||--o{ COMMENT     : "has"
+    POST ||--o{ COMMENT     : "contains"
     POST ||--o{ USER        : "liked by"
     USER }o--o{ CONVERSATION: "participates in"
     CONVERSATION ||--o{ MESSAGE : "contains"
@@ -370,56 +115,210 @@ erDiagram
     MESSAGE }o--o| POST     : "shares"
 ```
 
+### Real-Time Message Synchronization Flow
+
+```mermaid
+sequenceDiagram
+    participant Browser as Client (chat.js)
+    participant Server as Express (routes/messages.js)
+    participant Database as MongoDB (Mongoose)
+
+    loop Every 3 Seconds (Polling Interval)
+        Browser->>Server: GET /api/messages/:convoId?after=timestamp
+        Server->>Database: Find Messages (createdAt > timestamp)
+        Database-->>Server: Return Array of New Messages
+        Server->>Database: Update (sender != me, read = false) -> read = true
+        Server-->>Browser: JSON Array of Messages
+        Note over Browser: Append templates dynamically to Chat DOM
+    end
+```
+
 ---
 
-## 🧩 Key Design Decisions
+## 🏗️ Key Design Decisions
 
-| Decision | Rationale |
-|:---------|:----------|
-| **Express 5** | Native `async` error handling, improved routing, future-proof |
-| **EJS over React/Vue** | Server-rendered for simplicity — no build step, fast TTFB |
-| **JWT in HTTP-only cookies** | XSS-resistant session storage, stateless backend |
-| **Embedded comments** | Comments are always read with their parent post — avoids extra queries |
-| **Conversation `participantKey`** | Unique sorted compound key ensures exactly one thread per user pair |
-| **Multer disk storage** | Simple local file handling with crypto-random filenames to prevent collisions |
-| **CSS custom properties** | Enables runtime dark / light theme toggle without reloading |
+| Architectural Component | Selected Pattern | Engineering Rationale |
+| :--- | :--- | :--- |
+| **Routing Architecture** | Express 5 Middleware | Eliminates manual try-catch wrappers for async controllers, reducing route boilerplate. |
+| **Authentication Strategy**| HTTP-Only JWT Cookies | Safeguards against cross-site scripting (XSS) session theft while remaining completely stateless. |
+| **Comments Schema** | Embedded Sub-documents | Stores comments directly inside the `POST` document since they are always fetched concurrently. |
+| **Story Expiry sweeps** | JIT Feed Purging | Story database cleaning runs on-demand during `/feed` requests, removing the overhead of running persistent cron daemons. |
+| **Conversation Keys** | Sorted `participantKey` | Compiles participant IDs alphabetically to prevent duplicate 1-on-1 message threads. |
+| **Theme System** | Pure CSS Variables | Facilitates styling re-evaluation without needing front-end JS compiler frameworks. |
+
+---
+
+## 📂 Project Structure
+
+```
+SocialSphere/
+├── app.js                    # Core server configuration, database connections & routing
+├── package.json              # Dependency manifests & run scripts
+├── .env                      # Application environment configurations
+│
+├── config/
+│   ├── defaults.js           # Media fallbacks & default image handlers
+│   └── multerconfig.js       # Disk upload configuration and image validation rules
+│
+├── models/
+│   ├── user.js               # User document, follower relationships, & saved posts arrays
+│   ├── post.js               # Feed/Story schemas, like tracks, & embedded comments
+│   ├── conversation.js       # DM Thread maps with sorted participant keys
+│   └── message.js            # Message documents supporting text, image, links, & post shares
+│
+├── routes/
+│   └── messages.js           # Express endpoints & polling endpoints for messaging
+│
+├── views/
+│   ├── index.ejs             # Registration interface
+│   ├── login.ejs             # Access authorization portal
+│   ├── feed.ejs              # Main portal with home timeline & Stories tray
+│   ├── explore.ejs           # Grid discovery view & global member suggestions
+│   ├── search.ejs            # Regex query result templates
+│   ├── profile.ejs           # Profile views (support for self & external users)
+│   ├── profileupload.ejs     # Profile picture upload template
+│   ├── edit.ejs              # Post modification views
+│   │
+│   ├── partials/             # Reusable design partial snippets
+│   │   ├── head.ejs          # Global CSS imports, Google Fonts, & metadata
+│   │   ├── sidebar.ejs       # Desktop navigation deck
+│   │   ├── bottom-nav.ejs    # Mobile layout utility navigation bar
+│   │   ├── post-card.ejs     # Standardized content card for posts
+│   │   ├── suggestions.ejs   # "People you may know" recommendation widget
+│   │   ├── chat-bubble.ejs   # Context-aware chat templates (text, image, shared post)
+│   │   └── settings-modal.ejs# Profile parameter modifications
+│   │
+│   └── messages/
+│       ├── inbox.ejs         # DM thread index
+│       └── chat.ejs          # Full-screen conversation thread EJS template
+│
+└── public/
+    ├── stylesheets/
+    │   └── app.css           # Global design system & theme sheets (~35 KB)
+    └── javascripts/
+        ├── app.js            # DOM control handlers, CSS filter selections, & modal toggles
+        └── chat.js           # AJAX Message pollers & scroll managers
+```
+
+---
+
+## 📡 Route Directory
+
+### 🔐 Authentication Portal
+* `GET  /` - Entry point; renders Registration page.
+* `POST /register` - Registers new user with Bcrypt password hashing.
+* `GET  /login` - Renders Login portal.
+* `POST /login` - Processes verification, issues JWT cookie.
+* `GET  /logout` - Destroys session cookies.
+
+### 📰 Feed & Socialization
+* `GET  /feed` - Renders user feed, purges stale stories, displays suggestions.
+* `POST /post` - Creates text/media posts and stories with custom CSS filters.
+* `GET  /like/:id` - REST API to toggle like status. Supports AJAX or standard redirects.
+* `POST /comment/:id` - appends standard comment to specified post.
+* `POST /comment/:postId/delete/:commentId` - Removes authorized comments.
+* `GET  /edit/:id` - Form view to modify owned posts.
+* `POST /update/:id` - Persists content modifications or switches images.
+* `POST /delete/:id` - Deletes owned posts and clears referenced links.
+
+### 👤 Profile Management
+* `GET  /profile` - Displays current user’s stats, grid, and stories.
+* `GET  /u/:username` - Public user profile pages.
+* `POST /profile/bio` - Updates 160-character biography.
+* `POST /profile/personal-info` - Updates age and gender attributes.
+* `GET  /profile/upload` - Profile picture editing board.
+* `POST /upload` - Stores uploaded avatar using Multer disk engine.
+* `GET  /profile/saved` - Renders saved post listings.
+* `GET  /save/:id` - Toggles saved bookmarks.
+* `GET  /follow/:id` - Toggles follow state of specific target profiles.
+
+### 🔍 Discovery & Messages
+* `GET  /search?q=` - Case-insensitive regex query executor for posts and users.
+* `GET  /explore` - Recommends trending creators (by follower count) and globally popular posts.
+* `GET  /messages` - Renders inbox listing active threads.
+* `GET  /messages/with/:username` - Opens chat interface, marks messages as read.
+* `GET  /api/messages/:conversationId` - JSON stream endpoint used for message polling.
+* `POST /messages/send` - Dispatches messages (supports files, text, hyperlinks, & shared post cards).
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+* **Node.js** v18 or higher.
+* **MongoDB** (Local instance or an Atlas cloud connection).
+
+### 1. Clone Project
+```bash
+git clone https://github.com/Vidhya-Majee/SocialSphere.git
+cd SocialSphere
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Setups
+Create a `.env` file in the root directory:
+```env
+MONGODB_URI=mongodb://localhost:27017/socialsphere
+JWT_SECRET=your_super_secure_jwt_secret_key_here
+PORT=5000
+```
+
+> [!TIP]
+> Generate a highly secure random string for `JWT_SECRET` using Node.js:
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+> ```
+
+### 4. Run Server
+```bash
+# Production Mode
+npm start
+
+# Development Mode (Nodemon / Watcher)
+npm run dev
+```
+
+### 5. Access
+Launch your browser and head to:
+```
+http://localhost:5000
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how to get started:
+Contributions make the open-source community an amazing place to learn, inspire, and create.
 
-1. **Fork** the repository
-2. **Create** a feature branch
+1. **Fork** the project repository.
+2. **Branch** off into your feature deck:
    ```bash
-   git checkout -b feature/amazing-feature
+   git checkout -b feature/awesome-feature
    ```
-3. **Commit** your changes
+3. **Commit** your changes following standard guidelines:
    ```bash
-   git commit -m "feat: add amazing feature"
+   git commit -m "feat: integrate cool feature"
    ```
-4. **Push** to the branch
+4. **Push** to the origin repository:
    ```bash
-   git push origin feature/amazing-feature
+   git push origin feature/awesome-feature
    ```
-5. **Open** a Pull Request
-
-> [!NOTE]
-> Please follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages and open an issue before starting work on large changes.
+5. **Open** a Pull Request for review.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **ISC License** — see the [LICENSE](https://opensource.org/licenses/ISC) file for details.
-
----
+Licensed under the **ISC License** — see the [LICENSE](https://opensource.org/licenses/ISC) file for details.
 
 <div align="center">
 
 **Built with ❤️ by [Vidhya Majee](https://github.com/Vidhya-Majee)**
 
-<sub>If you found this project helpful, consider giving it a ⭐ on GitHub!</sub>
+<sub>Show some love by adding a ⭐ to the repository!</sub>
 
 </div>

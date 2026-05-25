@@ -135,10 +135,34 @@ app.get('/logout', (req, res) => {
 
 // ——— Feed (everyone's posts — Instagram / Facebook style) ———
 app.get('/feed', isloggedIn, async (req, res) => {
-  const user = await loadCurrentUser(req);
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  // Clean up story posts older than 24 hours
+  try {
+    const expiredStories = await postModel.find({ isStory: true, date: { $lt: oneDayAgo } });
+    if (expiredStories.length > 0) {
+      const expiredIds = expiredStories.map(s => s._id);
+      await postModel.deleteMany({ _id: { $in: expiredIds } });
+      await userModel.updateMany({}, { $pull: { posts: { $in: expiredIds } } });
+      console.log(`Cleaned up ${expiredIds.length} expired stories.`);
+    }
+  } catch (err) {
+    console.error('Error cleaning up expired stories:', err);
+  }
+
+  const user = await userModel
+    .findOne({ email: req.user.email })
+    .populate('followers following', 'username name profilepic')
+    .populate('savedPosts')
+    .populate({
+      path: 'posts',
+      match: { isStory: true, date: { $gte: oneDayAgo } },
+      options: { sort: { date: -1 } },
+      select: 'image content date isStory'
+    });
 
   const posts = await postModel
-    .find()
+    .find({ isStory: { $ne: true } })
     .sort({ date: -1 })
     .limit(50)
     .populate('user', 'username name profilepic')
@@ -147,7 +171,13 @@ app.get('/feed', isloggedIn, async (req, res) => {
 
   const storyUsers = await userModel
     .find({ username: { $exists: true, $nin: ['', null] }, email: { $nin: ['', null] } })
-    .select('username name profilepic')
+    .select('username name profilepic posts')
+    .populate({
+      path: 'posts',
+      match: { isStory: true, date: { $gte: oneDayAgo } },
+      options: { sort: { date: -1 } },
+      select: 'image content date isStory'
+    })
     .sort({ createdAt: -1 })
     .limit(15);
 
@@ -174,7 +204,7 @@ app.get('/feed', isloggedIn, async (req, res) => {
 app.get('/explore', isloggedIn, async (req, res) => {
   const user = await loadCurrentUser(req);
   const posts = await postModel
-    .find()
+    .find({ isStory: { $ne: true } })
     .sort({ date: -1 })
     .limit(30)
     .populate('user', 'username name profilepic');
@@ -201,7 +231,7 @@ app.get('/search', isloggedIn, async (req, res) => {
       .limit(20)
       .select('username name profilepic bio followers');
     posts = await postModel
-      .find({ content: regex })
+      .find({ content: regex, isStory: { $ne: true } })
       .sort({ date: -1 })
       .limit(15)
       .populate('user', 'username name profilepic');
@@ -215,6 +245,7 @@ app.get('/profile', isloggedIn, async (req, res) => {
     .findOne({ email: req.user.email })
     .populate({
       path: 'posts',
+      match: { isStory: { $ne: true } },
       options: { sort: { date: -1 } },
       populate: { path: 'user', select: 'username name profilepic' },
     })
@@ -234,7 +265,7 @@ app.get('/profile/saved', isloggedIn, async (req, res) => {
       ],
     });
   const posts = await postModel
-    .find({ _id: { $in: user.savedPosts || [] } })
+    .find({ _id: { $in: user.savedPosts || [] }, isStory: { $ne: true } })
     .sort({ date: -1 })
     .populate('user', 'username name profilepic')
     .populate('comments.user', 'username profilepic')
@@ -260,6 +291,7 @@ app.get('/u/:username', isloggedIn, async (req, res) => {
     .findOne({ username: req.params.username })
     .populate({
       path: 'posts',
+      match: { isStory: { $ne: true } },
       options: { sort: { date: -1 } },
       populate: { path: 'user', select: 'username name profilepic' },
     })
@@ -376,6 +408,8 @@ app.post('/post', isloggedIn, handleUpload('image'), async (req, res) => {
       user: author._id,
       content: content || 'Shared a photo',
       image: req.file ? req.file.filename : '',
+      filter: req.body.filter || 'filter-normal',
+      isStory: req.body.isStory === 'true',
     });
 
     await userModel.updateOne({ _id: author._id }, { $push: { posts: post._id } });
@@ -388,12 +422,23 @@ app.post('/post', isloggedIn, handleUpload('image'), async (req, res) => {
 
 app.get('/like/:id', isloggedIn, async (req, res) => {
   const post = await postModel.findById(req.params.id);
-  if (!post) return res.redirect('/feed');
+  if (!post) {
+    if (req.query.ajax === '1') return res.status(404).json({ error: 'Post not found' });
+    return res.redirect('/feed');
+  }
   const uid = req.user.userid.toString();
   const idx = post.likes.findIndex((id) => (id._id || id).toString() === uid);
   if (idx === -1) post.likes.push(req.user.userid);
   else post.likes.splice(idx, 1);
   await post.save();
+
+  if (req.query.ajax === '1') {
+    return res.json({
+      success: true,
+      liked: idx === -1,
+      likesCount: post.likes.length,
+    });
+  }
   res.redirect(req.query.next || '/feed');
 });
 
@@ -441,14 +486,25 @@ app.post('/update/:id', isloggedIn, handleUpload('image'), async (req, res) => {
 app.post('/delete/:id', isloggedIn, async (req, res) => {
   try {
     const user = await userModel.findOne({ email: req.user.email });
-    if (!user) return res.redirect('/login');
+    if (!user) {
+      if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      return res.redirect('/login');
+    }
     const post = await postModel.findOneAndDelete({ _id: req.params.id, user: user._id });
     if (post) {
       await userModel.updateOne({ _id: user._id }, { $pull: { posts: post._id } });
     }
+    if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+      return res.json({ success: true });
+    }
     res.redirect(req.body.redirect || req.query.next || '/feed');
   } catch (err) {
     console.error('Delete post error:', err);
+    if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+      return res.status(500).json({ error: 'Could not delete post' });
+    }
     res.redirect((req.body.redirect || '/feed') + '?error=delete');
   }
 });
@@ -510,4 +566,13 @@ mongoose
   })
   .catch((err) => console.error(err));
 
-app.listen(PORT, () => console.log(`SocialSphere running on http://localhost:${PORT}`));
+const server = app.listen(PORT, () => console.log(`SocialSphere running on http://localhost:${PORT}`));
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Error: Port ${PORT} is already in use. Please terminate the process using this port and restart.`);
+  } else {
+    console.error('Server error:', err);
+  }
+  process.exit(1);
+});
