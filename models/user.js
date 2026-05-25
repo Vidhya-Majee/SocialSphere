@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: String,
   age: Number,
+  gender: { type: String, default: 'Not specified' },
   bio: { type: String, default: '', maxlength: 160 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],

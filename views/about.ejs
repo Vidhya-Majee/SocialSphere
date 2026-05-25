@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="app-shell" id="aboutPageContainer">
+    <%- include('partials/sidebar') %>
+
+    <div class="app-main app-main--single">
+      <header class="mobile-header">
+        <a href="javascript:history.back()" class="text-muted"><i class="fas fa-arrow-left"></i></a>
+        <h1 style="font-size:1rem">Account Info</h1>
+        <span></span>
+      </header>
+
+      <div class="content-primary page-padding">
+        <!-- Back Navigation for Desktop -->
+        <div class="hidden-mobile" style="margin-bottom:1rem">
+          <a href="javascript:history.back()" class="text-link" style="display:inline-flex;align-items:center;gap:0.5rem">
+            <i class="fas fa-arrow-left"></i> Back to previous page
+          </a>
+        </div>
+
+        <!-- Success Toast Alert -->
+        <% if (typeof query !== 'undefined' && query.success) { %>
+        <div class="auth-error" style="background:#e6f9ed;color:#1e7e34;border:1px solid #c3e6cb;margin-bottom:1rem">
+          <i class="fas fa-circle-check"></i> Account information updated successfully!
+        </div>
+        <% } %>
+
+        <!-- User Profile Card -->
+        <section class="about-hero" style="padding: 2rem 1.5rem; margin-bottom:1rem">
+          <img class="avatar avatar-lg" src="<%= profileImg(user.profilepic) %>" alt="" style="margin: 0 auto 0.75rem; width: 72px; height: 72px;">
+          <h2><%= user.name %></h2>
+          <span class="version-badge">@<%= user.username %></span>
+          <p class="text-muted" style="font-size:0.85rem">
+            <i class="far fa-calendar-alt"></i> Member since <%= new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %>
+          </p>
+        </section>
+
+        <!-- Account details & Edit Form -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-user">
+              <strong><i class="fas fa-user-gear" style="margin-right:6px"></i> Account details</strong>
+            </div>
+            <span class="text-muted" style="font-size:0.75rem">Personal Info</span>
+          </div>
+          <div style="padding:1.25rem">
+            <form action="/profile/personal-info" method="POST">
+              <!-- Username (Readonly) -->
+              <div class="form-group" style="margin-bottom: 1.15rem;">
+                <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.35rem">Username</label>
+                <input class="form-input" type="text" value="<%= user.username %>" readonly style="opacity:0.65;cursor:not-allowed">
+              </div>
+
+              <!-- Email (Readonly) -->
+              <div class="form-group" style="margin-bottom: 1.15rem;">
+                <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.35rem">Email Address</label>
+                <input class="form-input" type="email" value="<%= user.email %>" readonly style="opacity:0.65;cursor:not-allowed">
+              </div>
+
+              <!-- Age (Editable) -->
+              <div class="form-group" style="margin-bottom: 1.15rem;">
+                <label for="ageInput" style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.35rem">Age</label>
+                <input class="form-input" type="number" id="ageInput" name="age" value="<%= user.age || '' %>" placeholder="Enter age" min="1" max="120">
+              </div>
+
+              <!-- Gender (Editable Select Dropdown) -->
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label for="genderSelect" style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.35rem">Gender</label>
+                <select class="form-input" id="genderSelect" name="gender" style="height:auto;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238e8e8e%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');background-repeat:no-repeat;background-position:right%200.9rem%20center;background-size:0.65rem%20auto;padding-right:2rem">
+                  <option value="Not specified" <%= user.gender === 'Not specified' ? 'selected' : '' %>>Not specified</option>
+                  <option value="Male" <%= user.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                  <option value="Female" <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                  <option value="Other" <%= user.gender === 'Other' ? 'selected' : '' %>>Other</option>
+                  <option value="Prefer not to say" <%= user.gender === 'Prefer not to say' ? 'selected' : '' %>>Prefer not to say</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="margin: 0; width: 100%">
+                <i class="fas fa-floppy-disk" style="margin-right:4px"></i> Save Personal Details
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Fun Easter Egg Zero Gravity field -->
+        <button type="button" class="zero-g-btn" id="zeroGravityBtn" style="margin-top: 1rem;">
+          <i class="fas fa-feather" style="margin-right:4px"></i> Activate Zero Gravity Mode
+        </button>
+      </div>
+    </div>
+
+    <%- include('partials/bottom-nav') %>
+  </div>
+
+  <script>
+    (function () {
+      // 1. Zero Gravity Easter Egg Trigger
+      const container = document.getElementById('aboutPageContainer');
+      const zeroGBtn = document.getElementById('zeroGravityBtn');
+
+      if (zeroGBtn && container) {
+        zeroGBtn.addEventListener('click', function () {
+          const isActive = container.classList.toggle('zero-g-active');
+          zeroGBtn.classList.toggle('active', isActive);
+
+          if (isActive) {
+            zeroGBtn.innerHTML = '<i class="fas fa-anchor" style="margin-right:4px"></i> Restore Gravity Mode';
+            // Show custom notification toast
+            const floatMsg = document.createElement('div');
+            floatMsg.id = 'zeroGravityAlert';
+            floatMsg.style.position = 'fixed';
+            floatMsg.style.bottom = '80px';
+            floatMsg.style.left = '50%';
+            floatMsg.style.transform = 'translateX(-50%)';
+            floatMsg.style.background = 'rgba(0,0,0,0.85)';
+            floatMsg.style.color = '#fff';
+            floatMsg.style.padding = '0.5rem 1rem';
+            floatMsg.style.borderRadius = '20px';
+            floatMsg.style.fontSize = '0.8rem';
+            floatMsg.style.zIndex = '9999';
+            floatMsg.style.pointerEvents = 'none';
+            floatMsg.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+            floatMsg.textContent = 'Zero gravity field engaged 🛸';
+            document.body.appendChild(floatMsg);
+            setTimeout(() => { 
+              floatMsg.style.transition = 'opacity 0.5s'; 
+              floatMsg.style.opacity = '0'; 
+              setTimeout(() => floatMsg.remove(), 500); 
+            }, 3000);
+          } else {
+            zeroGBtn.innerHTML = '<i class="fas fa-feather" style="margin-right:4px"></i> Activate Zero Gravity Mode';
+            const alertEl = document.getElementById('zeroGravityAlert');
+            if (alertEl) alertEl.remove();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

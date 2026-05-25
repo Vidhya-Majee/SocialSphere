@@ -23,11 +23,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
-function isloggedIn(req, res, next) {
+async function isloggedIn(req, res, next) {
   const token = req.cookies.token;
   if (!token) return res.redirect('/login');
   try {
     req.user = jwt.verify(token, JWT_SECRET);
+
+    // Calculate unread messages count for notifications
+    try {
+      const conversationModel = require('./models/conversation');
+      const messageModel = require('./models/message');
+      const myConvos = await conversationModel.find({ participants: req.user.userid }).select('_id');
+      res.locals.unreadMessagesCount = await messageModel.countDocuments({
+        conversation: { $in: myConvos.map((c) => c._id) },
+        sender: { $ne: req.user.userid },
+        read: false,
+      });
+    } catch (err) {
+      console.error('Error getting unread count:', err);
+      res.locals.unreadMessagesCount = 0;
+    }
+
     next();
   } catch {
     res.clearCookie('token');
@@ -268,9 +284,75 @@ app.post('/profile/bio', isloggedIn, async (req, res) => {
   res.redirect('/profile');
 });
 
+app.post('/profile/personal-info', isloggedIn, async (req, res) => {
+  const { age, gender } = req.body;
+  await userModel.findOneAndUpdate(
+    { email: req.user.email },
+    { age: parseInt(age) || undefined, gender: gender || 'Not specified' }
+  );
+  res.redirect('/about?success=1');
+});
+
+app.post('/profile/delete-account', isloggedIn, async (req, res) => {
+  try {
+    const userId = req.user.userid;
+    
+    const postModel = require('./models/post');
+    const conversationModel = require('./models/conversation');
+    const messageModel = require('./models/message');
+
+    // 1. Delete all posts created by the user
+    await postModel.deleteMany({ user: userId });
+
+    // 2. Remove user comments on all other posts
+    await postModel.updateMany(
+      {},
+      { $pull: { comments: { user: userId } } }
+    );
+
+    // 3. Remove user likes on all other posts
+    await postModel.updateMany(
+      {},
+      { $pull: { likes: userId } }
+    );
+
+    // 4. Remove user from followers and following lists of all other users
+    await userModel.updateMany(
+      {},
+      { $pull: { followers: userId, following: userId } }
+    );
+
+    // 5. Delete all conversations involving the user and their messages
+    const myConvos = await conversationModel.find({ participants: userId }).select('_id');
+    const convoIds = myConvos.map(c => c._id);
+    await messageModel.deleteMany({ conversation: { $in: convoIds } });
+    await conversationModel.deleteMany({ participants: userId });
+
+    // 6. Finally delete the user document
+    await userModel.findByIdAndDelete(userId);
+
+    // 7. Clear authentication cookie and redirect
+    res.clearCookie('token');
+    res.redirect('/');
+  } catch (err) {
+    console.error('Delete account error:', err);
+    res.status(500).send('Could not delete account. Please try again.');
+  }
+});
+
 app.get('/profile/upload', isloggedIn, async (req, res) => {
   const user = await loadCurrentUser(req);
   res.render('profileupload', { title: 'Edit photo', user, active: 'profile' });
+});
+
+app.get('/settings', isloggedIn, async (req, res) => {
+  const user = await loadCurrentUser(req);
+  res.render('profile/settings', { title: 'Settings', user, active: 'profile' });
+});
+
+app.get('/about', isloggedIn, async (req, res) => {
+  const user = await loadCurrentUser(req);
+  res.render('about', { title: 'About SocialSphere', user, active: 'profile' });
 });
 
 app.post('/upload', isloggedIn, handleUpload('image'), async (req, res) => {

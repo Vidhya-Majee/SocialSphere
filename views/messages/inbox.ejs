@@ -27,13 +27,18 @@
           <% } %>
           <% threads.forEach(function(t) { %>
           <% if (!t.other) return; %>
-          <a href="/messages/with/<%= t.other.username %><%= (typeof query !== 'undefined' && query.share) ? '?share=' + query.share : '' %>" class="thread-row">
+          <a href="/messages/with/<%= t.other.username %><%= (typeof query !== 'undefined' && query.share) ? '?share=' + query.share : '' %>" class="thread-row" style="position: relative;">
             <img class="avatar" src="<%= profileImg(t.other.profilepic) %>" alt="">
             <div class="thread-row__body">
               <strong><%= t.other.username %></strong>
-              <span><%= t.conversation.lastPreview || 'Start chatting' %></span>
+              <span class="<%= t.unreadCount > 0 ? 'thread-unread-preview' : '' %>"><%= t.conversation.lastPreview || 'Start chatting' %></span>
             </div>
-            <span class="thread-row__time"><%= timeAgo(t.conversation.lastMessageAt) %></span>
+            <div class="thread-row__meta" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+              <span class="thread-row__time"><%= timeAgo(t.conversation.lastMessageAt) %></span>
+              <% if (t.unreadCount > 0) { %>
+                <span class="badge-danger"><%= t.unreadCount %></span>
+              <% } %>
+            </div>
           </a>
           <% }) %>
         </section>

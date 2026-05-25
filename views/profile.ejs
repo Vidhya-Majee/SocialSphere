@@ -172,6 +172,15 @@
 
       <div class="ps-nav-divider"></div>
 
+      <a href="/about" class="ps-nav-item">
+        <span class="ps-nav-icon"><i class="fas fa-user-gear"></i></span>
+        <span class="ps-nav-text">
+          <strong>Account Info</strong>
+          <small>Email, Username, Age & Gender</small>
+        </span>
+        <i class="fas fa-chevron-right"></i>
+      </a>
+
       <button type="button" class="ps-nav-item" id="psThemeToggle">
         <span class="ps-nav-icon ps-nav-icon--theme"><i class="fas fa-moon" id="psThemeIcon"></i></span>
         <span class="ps-nav-text">
@@ -189,6 +198,12 @@
         <span class="ps-nav-icon ps-nav-icon--danger"><i class="fas fa-right-from-bracket"></i></span>
         <span class="ps-nav-text"><strong>Log Out</strong></span>
       </a>
+      <form action="/profile/delete-account" method="POST" onsubmit="return confirm('Are you absolutely sure you want to permanently delete your account? This action cannot be undone.')" style="margin: 0; width: 100%;">
+        <button type="submit" class="ps-nav-item ps-nav-item--logout" style="width: 100%; border: none; background: none; font: inherit; cursor: pointer; text-align: left; padding: 0.85rem 1.25rem;">
+          <span class="ps-nav-icon ps-nav-icon--danger" style="background: #fee2e2; color: #dc2626;"><i class="fas fa-trash-can"></i></span>
+          <span class="ps-nav-text"><strong style="color: #dc2626;">Delete Account</strong></span>
+        </button>
+      </form>
     </div>
   </aside>
 

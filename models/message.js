@@ -8,6 +8,7 @@ const messageSchema = mongoose.Schema({
   image: { type: String, default: '' },
   linkUrl: { type: String, default: '' },
   post: { type: mongoose.Schema.Types.ObjectId, ref: 'post' },
+  read: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

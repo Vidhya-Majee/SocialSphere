@@ -25,12 +25,18 @@ module.exports = function registerMessages(app, deps) {
         .sort({ lastMessageAt: -1 })
         .populate('participants', 'username name profilepic');
 
-      const threads = convos
-        .map((c) => {
+      const threads = (await Promise.all(
+        convos.map(async (c) => {
           const other = c.participants.find((p) => p && p._id.toString() !== user._id.toString());
-          return { conversation: c, other };
+          if (!other) return null;
+          const unreadCount = await messageModel.countDocuments({
+            conversation: c._id,
+            sender: other._id,
+            read: false,
+          });
+          return { conversation: c, other, unreadCount };
         })
-        .filter((t) => t.other);
+      )).filter(Boolean);
 
       const friends = await userModel
         .find({
@@ -66,6 +72,13 @@ module.exports = function registerMessages(app, deps) {
       if (other._id.toString() === user._id.toString()) return res.redirect('/messages');
 
       const conversation = await conversationModel.findOrCreate(user._id, other._id);
+
+      // Mark received messages in this conversation as read
+      await messageModel.updateMany(
+        { conversation: conversation._id, sender: other._id, read: false },
+        { $set: { read: true } }
+      );
+
       const messages = await messageModel
         .find({ conversation: conversation._id })
         .sort({ createdAt: 1 })
@@ -103,6 +116,16 @@ module.exports = function registerMessages(app, deps) {
     if (!conv || !conv.participants.some((p) => p.toString() === me._id.toString())) {
       return res.status(403).json({ error: 'Forbidden' });
     }
+
+    // Mark incoming messages as read during polling
+    const otherId = conv.participants.find((p) => p.toString() !== me._id.toString());
+    if (otherId) {
+      await messageModel.updateMany(
+        { conversation: conv._id, sender: otherId, read: false },
+        { $set: { read: true } }
+      );
+    }
+
     const after = req.query.after ? new Date(req.query.after) : null;
     const query = { conversation: conv._id };
     if (after && !isNaN(after.getTime())) query.createdAt = { $gt: after };

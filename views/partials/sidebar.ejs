@@ -7,7 +7,14 @@
       <a href="/feed"><i class="fas fa-house"></i> Home</a>
     </li>
     <li class="nav-item <%= active === 'messages' ? 'active' : '' %>">
-      <a href="/messages"><i class="far fa-comment-dots"></i> Messages</a>
+      <a href="/messages" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <span style="display: flex; align-items: center; gap: 1rem;">
+          <i class="far fa-comment-dots"></i> Messages
+        </span>
+        <% if (typeof unreadMessagesCount !== 'undefined' && unreadMessagesCount > 0) { %>
+          <span class="nav-badge" id="sidebarMsgBadge"><%= unreadMessagesCount %></span>
+        <% } %>
+      </a>
     </li>
     <li class="nav-item <%= active === 'search' ? 'active' : '' %>">
       <a href="/search"><i class="fas fa-magnifying-glass"></i> Search</a>
