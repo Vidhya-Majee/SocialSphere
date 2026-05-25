@@ -262,8 +262,8 @@ npm install
 ### 3. Environment Setups
 Create a `.env` file in the root directory:
 ```env
-MONGODB_URI=mongodb://localhost:27017/socialsphere
-JWT_SECRET=your_super_secure_jwt_secret_key_here
+MONGODB_URI=mongodb://localhost:36116/socialsphere
+JWT_SECRET=secret_key_here
 PORT=5000
 ```
 
