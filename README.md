@@ -4,11 +4,16 @@
 
 <div align="center">
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Active-brightgreen?style=for-the-badge&logo=render&logoColor=white)](https://socialsphere-gav1.onrender.com)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-8.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![EJS](https://img.shields.io/badge/EJS-3.x-B4CA65?style=for-the-badge&logo=ejs&logoColor=black)](https://ejs.co/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue?style=for-the-badge)](https://opensource.org/licenses/ISC)
+
+<br/>
+
+🚀 **Live Application:** [socialsphere-gav1.onrender.com](https://socialsphere-gav1.onrender.com)
 
 <br/>
 
@@ -283,10 +288,15 @@ npm run dev
 ```
 
 ### 5. Access
-Launch your browser and head to:
-```
-http://localhost:5000
-```
+* **Local Development:** Launch your browser and head to:
+  ```
+  http://localhost:5000
+  ```
+
+* **Live Deployment:** Open your browser and navigate to:
+  ```
+  https://socialsphere-gav1.onrender.com
+  ```
 
 ---
 
